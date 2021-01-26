@@ -9,7 +9,7 @@ An improvement on [emptydollar.set](https://github.com/emptysetsquad/dollar)
 
 | Name | Address |
 | --- | --- |
-| Bootstrapping Rewards | 0xEc9dCB3DC47FF5edc02666cE4Db459841853B7B4 |
+| Root / Bootstrapping Rewards | 0xEc9dCB3DC47FF5edc02666cE4Db459841853B7B4 |
 | QSD Rewards | 0xCd72c0A874782d7D5c85208c1bbAE46c409478dd |
 | LP Rewards | 0xDBAf2265C74AD30a90B08D14E8097D13B891a2cF |
 | QSG Rewards | 0xD9122DB4cB0E1c42dA965Ee5D25606C7ef607145 |
