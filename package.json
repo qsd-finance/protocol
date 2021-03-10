@@ -105,5 +105,8 @@
     "hardhat:run": "hardhat run",
     "hardhat:node": "hardhat node",
     "deploy-mainnet": "ts-node scripts/deploy-mainnet.ts"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-etherscan": "^2.1.1"
   }
 }

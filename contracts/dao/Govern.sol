@@ -95,7 +95,7 @@ contract Govern is Setters, Permission, Upgradeable {
         Require.that(epoch() <= endsAfter.add(1).add(Constants.getGovernanceExpiration()), FILE, "Expired");
 
         Require.that(
-            Decimal.ratio(votesFor(candidate), totalBondedAt(endsAfter)).greaterThan(Constants.getGovernanceQuorum()),
+            Decimal.ratio(votesFor(candidate),  IPoolGov(poolGov()).totalBonded()).greaterThan(Constants.getGovernanceQuorum()),
             FILE,
             "Must have quorom"
         );

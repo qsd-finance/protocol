@@ -29,7 +29,7 @@ library Constants {
     uint256 private constant BOOTSTRAPPING_PRICE = 11e17; // 1.10 DAI
 
     /* Oracle */
-    address private constant DAI = address(0x6B175474E89094C44Da98b954EedeAC495271d0F);
+    address private constant DAI = address(0x33D000dfe25424Ac6f87aC771728fF231d5b1E35); //address(0x6B175474E89094C44Da98b954EedeAC495271d0F);
     uint256 private constant ORACLE_RESERVE_MINIMUM = 10000e18; // 10,000 DAI
 
     /* Bonding */
@@ -78,13 +78,13 @@ library Constants {
     /* Regulator (post-bootstrap) */
     // QSD #2
     uint256 private constant SUPPLY_CHANGE_LIMIT = 54e15; // 5.4% Expansion/Contraction limit
-    uint256 private constant POOL_BONDING_RATIO = 67; // 67%
-    uint256 private constant POOL_LP_RATIO = 23; // 23%
-    uint256 private constant TREASURY_RATIO = 5; // 5%
-    uint256 private constant GOV_STAKING_RATIO = 5; // 5%
+    uint256 private constant POOL_BONDING_RATIO = 40; //67; // 67%  //##
+    uint256 private constant POOL_LP_RATIO = 30; //23; // 23%       //##
+    uint256 private constant TREASURY_RATIO = 15; //5; // 5%        //##
+    uint256 private constant GOV_STAKING_RATIO = 15; //5; // 5%     //##
 
     /* External */
-    address private constant TREASURY_ADDRESS = address(0x61c32f08B0cbe61feF4166f09363504b4b5F38d8);
+    address private constant TREASURY_ADDRESS = address(0xD6F11BAEf82ceea8e6E7B29Dfc205e499d7ecee8); //address(0x61c32f08B0cbe61feF4166f09363504b4b5F38d8);
 
     /**
      * Getters

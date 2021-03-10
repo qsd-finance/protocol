@@ -36,13 +36,15 @@ contract Regulator is Comptroller {
     function step() internal {
         Decimal.D256 memory price = oracleCapture();
 
-        if (price.greaterThan(Decimal.one())) {
+        //if (price.greaterThan(Decimal.one())) {
+        if (price.greaterThan(Decimal.one().mul(100).div(98))) {   //##
             // Expand supply
             growSupply(price);
             return;
         }
 
-        if (price.lessThan(Decimal.one())) {
+        //if (price.lessThan(Decimal.one())) {
+        if (price.lessThan(Decimal.one().mul(100).div(98))) {    //##
             // Distribute governance tokens to stakers
             distributeGovernanceTokens();
             return;
@@ -66,9 +68,9 @@ contract Regulator is Comptroller {
     function oracleCapture() private returns (Decimal.D256 memory) {
         (Decimal.D256 memory price, bool valid) = oracle().capture();
 
-        if (bootstrappingAt(epoch().sub(1))) {
+        /*if (bootstrappingAt(epoch().sub(1))) {
             return Constants.getBootstrappingPrice();
-        }
+        }*/
         if (!valid) {
             return Decimal.one();
         }

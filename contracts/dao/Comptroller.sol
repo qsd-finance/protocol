@@ -26,6 +26,7 @@ contract Comptroller is Setters {
     using SafeMath for uint256;
 
     bytes32 private constant FILE = "Comptroller";
+    
 
     function mintToAccount(address account, uint256 amount) internal {
         dollar().mint(account, amount);
@@ -33,9 +34,10 @@ contract Comptroller is Setters {
     }
 
     function increaseSupply(uint256 newSupply) internal returns (uint256, uint256) {
+        setExpansionState(true);    //##
         // QSD #7
         // If we're still bootstrapping
-        if (bootstrappingAt(epoch().sub(1))) {
+        /*if (bootstrappingAt(epoch().sub(1))) {
             uint256 rewards = newSupply.div(2);
 
             // 50% to Bonding (auto-compounding)
@@ -47,7 +49,7 @@ contract Comptroller is Setters {
             // Redeemable always 0 since we don't have any coupon mechanism
             // Bonded will always be the new supply as well
             return (0, newSupply);
-        } else {
+        } else {*/
             // QSD #B
 
             // 0-a. Pay out to Pool (LP)
@@ -68,10 +70,11 @@ contract Comptroller is Setters {
 
             balanceCheck();
             return (0, newSupply);
-        }
+        //}
     }
 
     function distributeGovernanceTokens() internal {
+        setExpansionState(false);   //##
         // Assume blocktime is 15 seconds
         uint256 blocksPerEpoch = Constants.getCurrentEpochStrategy().period.div(15);
         uint256 govTokenToMint = blocksPerEpoch.mul(Constants.getGovernanceTokenPerBlock());

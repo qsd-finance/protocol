@@ -30,6 +30,10 @@ contract Getters is State {
      * Global
      */
 
+    function inExpansion() public view returns(bool) {     //##
+        return _state.dao.epochInExpansion();
+    }
+
     function dai() public view returns (address) {
         return Constants.getDaiAddress();
     }

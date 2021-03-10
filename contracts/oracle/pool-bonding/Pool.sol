@@ -61,17 +61,8 @@ contract PoolBonding is Setters, Permission {
     }
 
     function bond(uint256 value) public validBalance {
+        require(inExpansion() == false, "cant deposit during expansion");    //##
         // QSD #B
-        // Logic kicks in post bootstrapping epoch - 2
-        // -2 to give 1 extra epoch time for ppl to bond
-        if (epoch() > 2) {
-            if (!bootstrappingAt(epoch().sub(2))) {
-                Decimal.D256 memory price = oracleCapture();
-                
-                Require.that(price.lessThan(Decimal.one()), FILE, "Cannot bond when price >1");
-            }
-        }
-
         _bond(value);
     }
 

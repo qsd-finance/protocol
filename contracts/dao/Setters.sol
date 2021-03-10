@@ -27,6 +27,10 @@ contract Setters is State, Getters {
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
+    function setExpansionState(bool _yesno) internal {  //##
+        _state.epoch.inExpansion = _yesno;
+    }
+
     /**
      * ERC20 Interface
      */

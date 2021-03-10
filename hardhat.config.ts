@@ -6,16 +6,30 @@ import { HardhatUserConfig } from "hardhat/config";
 
 import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-waffle";
+import "@nomiclabs/hardhat-etherscan";
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.5.17",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
+    compilers: [
+      {
+        version: "0.5.17",
+        settings: {
+          optimizer: {
+          enabled: true,
+          runs: 200,
+          },
+        },
+      },
+      {
+        version: "0.6.2", //"0.5.17",
+        settings: {
+          optimizer: {
+          enabled: true,
+          runs: 200,
+        },
       },
     },
+  ]
   },
   paths: {
     artifacts: "./artifacts",
@@ -26,6 +40,7 @@ const config: HardhatUserConfig = {
   networks: {
     localhost: {
       url: "http://localhost:8545",
+      accounts: {mnemonic: "busy junk employ candy express barely replace seminar abandon yellow royal dragon"} 
     },
     hardhat: {
       forking: {
@@ -38,7 +53,16 @@ const config: HardhatUserConfig = {
         mnemonic: "myth like bonus scare over problem client lizard pioneer submit female collect",
       },
     },
+    bsctestnet: {
+      url: "https://data-seed-prebsc-1-s1.binance.org:8545",
+      chainId: 97,
+      gasPrice: 20000000000,
+      blockGasLimit: 3033580,
+      accounts: {mnemonic: "inflict artist merge observe tobacco roast toward invest fit romance provide basket"} //0x183fd225C946712ed8A7C7583B5D5efb964835c9
+    },
   },
+  etherscan: {apiKey: "Z4YXSKDYMP79MN22ZEPD2I513YQY42ER7U"},
 };
 
 export default config;
+
