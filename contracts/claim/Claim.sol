@@ -35,6 +35,9 @@ contract Claims {
         
         qsdBalances[0x7a03b2e8ACe63164896717C1b22647aA450954A7] = 20;
         qsdgBalances[0x7a03b2e8ACe63164896717C1b22647aA450954A7] = 100;
+
+        qsdBalances[0x045cDCC2fc44Ea185c9cA70DdFA574D202a74848] = 20;
+        qsdgBalances[0x045cDCC2fc44Ea185c9cA70DdFA574D202a74848] = 100;
     }
     
     function claim() external {
