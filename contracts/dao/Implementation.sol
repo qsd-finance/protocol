@@ -32,7 +32,7 @@ contract Implementation is State, Bonding, Regulator, Govern {
 
     function initialize() public initializer {
         _state.epoch.current = 69;
-        _state.epoch.inExpansion = true;    //##
+        _state.epoch.inExpansion = false;    //##
     }
 
     function initializeOracle() public {
