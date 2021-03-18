@@ -35,19 +35,16 @@ contract Regulator is Comptroller {
 
     function step() internal {
         Decimal.D256 memory price = oracleCapture();
-        Decimal.D256 memory expansionPrice = Constants.getExpansionPrice();  //##
 
         //if (price.greaterThan(Decimal.one())) {
-        //if (price.greaterThan(Decimal.one().mul(100).div(98))) {   //##
-        if (price.greaterThan(expansionPrice)) {    //##
+        if (price.greaterThan(Decimal.one().mul(100).div(98))) {   //##
             // Expand supply
             growSupply(price);
             return;
         }
 
         //if (price.lessThan(Decimal.one())) {
-        //if (price.lessThan(Decimal.one().mul(100).div(98))) {    //##
-        if (price.lessThan(expansionPrice)) {     //##
+        if (price.lessThan(Decimal.one().mul(100).div(98))) {    //##
             // Distribute governance tokens to stakers
             distributeGovernanceTokens();
             return;
@@ -57,8 +54,7 @@ contract Regulator is Comptroller {
     }
 
     function growSupply(Decimal.D256 memory price) private {
-        Decimal.D256 memory expansionPrice = Constants.getExpansionPrice();  //##
-        Decimal.D256 memory delta = limit(price.sub(expansionPrice), price); //## limit(price.sub(Decimal.one()), price);
+        Decimal.D256 memory delta = limit(price.sub( Decimal.one().mul(100).div(98) ), price); //## limit(price.sub(Decimal.one()), price);
         uint256 newSupply = delta.mul(totalNet()).asUint256();
         (uint256 newRedeemable, uint256 newBonded) = increaseSupply(newSupply);
         emit SupplyIncrease(epoch(), price.value, newRedeemable, 0, newBonded);

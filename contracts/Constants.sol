@@ -23,9 +23,6 @@ library Constants {
     /* Chain */
     uint256 private constant CHAIN_ID = 56; //##  BSC Mainnet
 
-    /* Expansion */
-    uint256 private constant EXPANSION_PRICE = 102e16;      //## 1.02
-
     /* Bootstrapping */
     // QSD #3
     uint256 private constant BOOTSTRAPPING_PERIOD = 72;
@@ -92,10 +89,6 @@ library Constants {
     /**
      * Getters
      */
-
-    function getExpansionPrice() internal pure returns (Decimal.D256 memory) {      //##
-        return Decimal.D256({value: EXPANSION_PRICE});
-    }
 
     function getDaiAddress() internal pure returns (address) {
         return DAI;
