@@ -31,7 +31,7 @@ contract Implementation is State, Bonding, Regulator, Govern {
     event Incentivization(address indexed account, uint256 amount);
 
     function initialize() public initializer {
-        _state.epoch.current = 69;
+        _state.epoch.current = 282;
         _state.epoch.inExpansion = false;    //##
     }
 

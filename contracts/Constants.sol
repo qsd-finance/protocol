@@ -21,7 +21,10 @@ import "./external/Decimal.sol";
 
 library Constants {
     /* Chain */
-    uint256 private constant CHAIN_ID = 1; // Mainnet
+    uint256 private constant CHAIN_ID = 56; //##  BSC Mainnet
+
+    /* Expansion */
+    uint256 private constant EXPANSION_PRICE = 102e16;      //## 1.02
 
     /* Bootstrapping */
     // QSD #3
@@ -29,7 +32,7 @@ library Constants {
     uint256 private constant BOOTSTRAPPING_PRICE = 11e17; // 1.10 DAI
 
     /* Oracle */
-    address private constant DAI = address(0x33D000dfe25424Ac6f87aC771728fF231d5b1E35); //address(0x6B175474E89094C44Da98b954EedeAC495271d0F);
+    address private constant DAI = address(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56); //##
     uint256 private constant ORACLE_RESERVE_MINIMUM = 10000e18; // 10,000 DAI
 
     /* Bonding */
@@ -79,16 +82,20 @@ library Constants {
     // QSD #2
     uint256 private constant SUPPLY_CHANGE_LIMIT = 54e15; // 5.4% Expansion/Contraction limit
     uint256 private constant POOL_BONDING_RATIO = 40; //67; // 67%  //##
-    uint256 private constant POOL_LP_RATIO = 35; //23; // 23%       //##
+    uint256 private constant POOL_LP_RATIO = 30; //23; // 23%       //##
     uint256 private constant TREASURY_RATIO = 15; //5; // 5%        //##
-    uint256 private constant GOV_STAKING_RATIO = 10; //5; // 5%     //##
+    uint256 private constant GOV_STAKING_RATIO = 15; //5; // 5%     //##
 
     /* External */
-    address private constant TREASURY_ADDRESS = address(0xD6F11BAEf82ceea8e6E7B29Dfc205e499d7ecee8); //address(0x61c32f08B0cbe61feF4166f09363504b4b5F38d8);
+    address private constant TREASURY_ADDRESS = address(0x247C08e7f043B960457676516A3258484aD8e7Bb); //##
 
     /**
      * Getters
      */
+
+    function getExpansionPrice() internal pure returns (uint256) {      //##
+        return EXPANSION_PRICE;
+    }
 
     function getDaiAddress() internal pure returns (address) {
         return DAI;
