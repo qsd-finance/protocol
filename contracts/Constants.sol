@@ -31,7 +31,7 @@ library Constants {
     uint256 private constant BOOTSTRAPPING_PRICE = 11e17; // 1.10 DAI
 
     /* Oracle */
-    address private constant DAI = address(0xe9e7cea3dedca5984780bafc599bd69add087d56); //## mainnet busd
+    address private constant DAI = address(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56); //## mainnet busd
     uint256 private constant ORACLE_RESERVE_MINIMUM = 10000e18; // 10,000 DAI
 
     /* Bonding */
