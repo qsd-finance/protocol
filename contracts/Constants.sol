@@ -82,9 +82,9 @@ library Constants {
     // QSD #2
     uint256 private constant SUPPLY_CHANGE_LIMIT = 54e15; // 5.4% Expansion/Contraction limit
     uint256 private constant POOL_BONDING_RATIO = 40; //67; // 67%  //##
-    uint256 private constant POOL_LP_RATIO = 30; //23; // 23%       //##
+    uint256 private constant POOL_LP_RATIO = 35; //23; // 23%       //##
     uint256 private constant TREASURY_RATIO = 15; //5; // 5%        //##
-    uint256 private constant GOV_STAKING_RATIO = 15; //5; // 5%     //##
+    uint256 private constant GOV_STAKING_RATIO = 10; //5; // 5%     //##
 
     /* External */
     address private constant TREASURY_ADDRESS = address(0x247C08e7f043B960457676516A3258484aD8e7Bb); //##
