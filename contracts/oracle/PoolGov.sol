@@ -58,4 +58,10 @@ contract PoolGov is Pool {
 
         return PoolGetters.statusOf(user);
     }
+
+    function pokeRewards() external {
+        uint256 balanceOfBonded = balanceOfBonded(msg.sender);
+        unbond(balanceOfBonded);
+        bond(balanceOfBonded); //_bond(balanceOfBonded);
+    }
 }

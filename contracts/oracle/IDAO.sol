@@ -25,4 +25,5 @@ contract IDAO {
     function oracle() external view returns (IOracle);
     function bootstrappingAt(uint256) external view returns (bool);
     function oracleCaptureP() public returns (Decimal.D256 memory);
+    function epochInExpansion() public view returns (bool); //##
 }

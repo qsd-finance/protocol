@@ -42,6 +42,7 @@ contract Epoch {
         uint256 start;
         uint256 period;
         uint256 current;
+        bool inExpansion;
     }
 
     struct State {

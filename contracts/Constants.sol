@@ -21,7 +21,10 @@ import "./external/Decimal.sol";
 
 library Constants {
     /* Chain */
-    uint256 private constant CHAIN_ID = 1; // Mainnet
+    uint256 private constant CHAIN_ID = 56; //##  BSC Mainnet
+
+    /* Expansion */
+    uint256 private constant EXPANSION_PRICE = 102e16;      //## 1.02
 
     /* Bootstrapping */
     // QSD #3
@@ -29,7 +32,7 @@ library Constants {
     uint256 private constant BOOTSTRAPPING_PRICE = 11e17; // 1.10 DAI
 
     /* Oracle */
-    address private constant DAI = address(0x6B175474E89094C44Da98b954EedeAC495271d0F);
+    address private constant DAI = address(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56); //##
     uint256 private constant ORACLE_RESERVE_MINIMUM = 10000e18; // 10,000 DAI
 
     /* Bonding */
@@ -65,7 +68,7 @@ library Constants {
     uint256 private constant GOVERNANCE_EMERGENCY_DELAY = 6; // 6 epochs
 
     /* DAO */
-    uint256 private constant ADVANCE_INCENTIVE = 1e20; // 100 ESD    
+    uint256 private constant ADVANCE_INCENTIVE = 1e19; //1e20; // 100 ESD    //##
     uint256 private constant DAO_EXIT_LOCKUP_EPOCHS = 1; // 1 epochs fluid
 
     /* Pool */
@@ -78,17 +81,21 @@ library Constants {
     /* Regulator (post-bootstrap) */
     // QSD #2
     uint256 private constant SUPPLY_CHANGE_LIMIT = 54e15; // 5.4% Expansion/Contraction limit
-    uint256 private constant POOL_BONDING_RATIO = 67; // 67%
-    uint256 private constant POOL_LP_RATIO = 23; // 23%
-    uint256 private constant TREASURY_RATIO = 5; // 5%
-    uint256 private constant GOV_STAKING_RATIO = 5; // 5%
+    uint256 private constant POOL_BONDING_RATIO = 40; //67; // 67%  //##
+    uint256 private constant POOL_LP_RATIO = 35; //23; // 23%       //##
+    uint256 private constant TREASURY_RATIO = 15; //5; // 5%        //##
+    uint256 private constant GOV_STAKING_RATIO = 10; //5; // 5%     //##
 
     /* External */
-    address private constant TREASURY_ADDRESS = address(0x61c32f08B0cbe61feF4166f09363504b4b5F38d8);
+    address private constant TREASURY_ADDRESS = address(0x247C08e7f043B960457676516A3258484aD8e7Bb); //##
 
     /**
      * Getters
      */
+
+    function getExpansionPrice() internal pure returns (Decimal.D256 memory) {      //##
+        return Decimal.D256({value: EXPANSION_PRICE});
+    }
 
     function getDaiAddress() internal pure returns (address) {
         return DAI;

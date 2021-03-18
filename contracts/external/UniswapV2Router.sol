@@ -100,7 +100,8 @@ interface IUniswapV2Router02 {
         uint256 deadline
     ) external returns (uint256[] memory amounts);
 
-    function swapExactETHForTokens(
+    //function swapExactETHForTokens(
+    function swapExactBNBForTokens(
         uint256 amountOutMin,
         address[] calldata path,
         address to,
