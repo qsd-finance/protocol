@@ -23,13 +23,15 @@ library Constants {
     /* Chain */
     uint256 private constant CHAIN_ID = 56; //##  BSC Mainnet
 
+    uint256 private constant EXPANSION_PRICE = 102e16;  //##
+
     /* Bootstrapping */
     // QSD #3
     uint256 private constant BOOTSTRAPPING_PERIOD = 72;
     uint256 private constant BOOTSTRAPPING_PRICE = 11e17; // 1.10 DAI
 
     /* Oracle */
-    address private constant DAI = address(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56); //##
+    address private constant DAI = address(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56); //## mainnet busd
     uint256 private constant ORACLE_RESERVE_MINIMUM = 10000e18; // 10,000 DAI
 
     /* Bonding */
@@ -89,6 +91,10 @@ library Constants {
     /**
      * Getters
      */
+
+     function getExpansionPrice() internal pure returns (Decimal.D256 memory) {     //##
+        return Decimal.D256({value: EXPANSION_PRICE});
+    }
 
     function getDaiAddress() internal pure returns (address) {
         return DAI;

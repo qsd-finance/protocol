@@ -32,8 +32,8 @@ contract Liquidity is PoolSetters, Permission {
 
     bytes32 private constant FILE = "Liquidity";
 
-    address private constant UNISWAP_FACTORY = address(0xB9fA84912FF2383a617d8b433E926Adf0Dd3FEa1); //## //address(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f);
-    IUniswapV2Router02 private constant router = IUniswapV2Router02(0xE85C6ab56A3422E7bAfd71e81Eb7d0f290646078); //## //IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
+    address private constant UNISWAP_FACTORY = address(0xBCfCcbde45cE874adCB698cC183deBcF17952812); //## pcs factory
+    IUniswapV2Router02 private constant router = IUniswapV2Router02(0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F); //## pcs router
 
     event Provide(address indexed account, uint256 value, uint256 lessDai, uint256 newUniv2);
 
