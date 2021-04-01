@@ -74,11 +74,6 @@ contract Setters is State, Getters {
         _state.balance.claimable2 = _state.balance.claimable2.add(amount);
     }
 
-    function incrementBalanceOfClaimable3(address account, uint256 amount) internal {
-        _state.accounts[account].claimable3 = _state.accounts[account].claimable3.add(amount);
-        _state.balance.claimable3 = _state.balance.claimable3.add(amount);
-    }
-
     function decrementBalanceOfClaimable1(
         address account,
         uint256 amount,
@@ -97,15 +92,6 @@ contract Setters is State, Getters {
         _state.balance.claimable2 = _state.balance.claimable2.sub(amount, reason);
     }
 
-    function decrementBalanceOfClaimable3(
-        address account,
-        uint256 amount,
-        string memory reason
-    ) internal {
-        _state.accounts[account].claimable3 = _state.accounts[account].claimable3.sub(amount, reason);
-        _state.balance.claimable3 = _state.balance.claimable3.sub(amount, reason);
-    }
-
     function incrementBalanceOfPhantom1(address account, uint256 amount) internal {
         _state.accounts[account].phantom1 = _state.accounts[account].phantom1.add(amount);
         _state.balance.phantom1 = _state.balance.phantom1.add(amount);
@@ -114,11 +100,6 @@ contract Setters is State, Getters {
     function incrementBalanceOfPhantom2(address account, uint256 amount) internal {
         _state.accounts[account].phantom2 = _state.accounts[account].phantom2.add(amount);
         _state.balance.phantom2 = _state.balance.phantom2.add(amount);
-    }
-
-    function incrementBalanceOfPhantom3(address account, uint256 amount) internal {
-        _state.accounts[account].phantom3 = _state.accounts[account].phantom3.add(amount);
-        _state.balance.phantom3 = _state.balance.phantom3.add(amount);
     }
 
     function decrementBalanceOfPhantom1(
@@ -137,15 +118,6 @@ contract Setters is State, Getters {
     ) internal {
         _state.accounts[account].phantom2 = _state.accounts[account].phantom2.sub(amount, reason);
         _state.balance.phantom2 = _state.balance.phantom2.sub(amount, reason);
-    }
-
-    function decrementBalanceOfPhantom3(
-        address account,
-        uint256 amount,
-        string memory reason
-    ) internal {
-        _state.accounts[account].phantom3 = _state.accounts[account].phantom3.sub(amount, reason);
-        _state.balance.phantom3 = _state.balance.phantom3.sub(amount, reason);
     }
 
     function unfreeze(address account) internal {

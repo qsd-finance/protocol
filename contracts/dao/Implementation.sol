@@ -31,8 +31,9 @@ contract Implementation is State, Bonding, Regulator, Govern {
     event Incentivization(address indexed account, uint256 amount);
 
     function initialize() public initializer {
-        _state.epoch.current = 300;      //##
-        _state.epoch.inExpansion = false;    //##
+        _state.epoch.current = 300; //##
+        _state.epoch.inExpansion = false; //##
+        _state.epoch.epochsAtPeg = 0; //##J
     }
 
     function initializeOracle() public {
@@ -40,7 +41,7 @@ contract Implementation is State, Bonding, Regulator, Govern {
         require(address(_state.provider.oracle) == address(0), "oracle initialized!");
         Oracle oracle = new Oracle(address(dollar()));
         oracle.setup();
-        
+
         _state.provider.oracle = IOracle(address(oracle));
     }
 
@@ -55,19 +56,30 @@ contract Implementation is State, Bonding, Regulator, Govern {
     function initializePoolAddresses(
         address poolBonding,
         address poolLP,
-        address poolGov
+        address poolGov,
+        address uniPairAddress
     ) public {
         require(_state.provider.poolBonding == address(0), "pool bonding initialized!");
         require(_state.provider.poolLP == address(0), "pool LP initialized!");
         require(_state.provider.poolGov == address(0), "pool gov initialized!");
+        require(_state.provider.uniPairAddress == address(0), "pool gov initialized!");
 
         _state.provider.poolBonding = poolBonding;
         _state.provider.poolLP = poolLP;
         _state.provider.poolGov = poolGov;
+        _state.provider.uniPairAddress = uniPairAddress;
     }
 
     function epochInExpansion() public view returns (bool) {
         return _state.epoch.inExpansion;
+    }
+
+    function epochsAtPeg() public view returns (uint256) {
+        return _state.epoch.epochsAtPeg;
+    }
+
+    function getEpochTwap() public view returns (uint256) {
+        return _state.epoch.epochTwap;
     }
 
     function advance() external {
@@ -83,5 +95,4 @@ contract Implementation is State, Bonding, Regulator, Govern {
         mintToAccount(account, amount);
         emit Incentivization(account, amount);
     }
-    
 }

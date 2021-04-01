@@ -19,41 +19,33 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../../external/Require.sol";
 import "../../external/Decimal.sol";
 import "../../Constants.sol";
+import "./Liquidity.sol";
 import "./Permission.sol";
 import "./Setters.sol";
 
-contract PoolBonding is Setters, Permission {
+contract PoolLP is Setters, Permission, Liquidity {
     using SafeMath for uint256;
     using Decimal for Decimal.D256;
 
-    bytes32 private constant FILE = "Pool";
+    bytes32 private constant FILE = "Pool LP";
 
     constructor(
         IDAO _dao,
         IERC20 _stakingToken,
         IERC20 _rewardsToken1,
-        IERC20 _rewardsToken2,
-        IERC20 _rewardsToken3
+        IERC20 _rewardsToken2
     ) public {
         _state.dao = _dao;
         _state.stakingToken = _stakingToken;
         _state.rewardsToken1 = _rewardsToken1;
         _state.rewardsToken2 = _rewardsToken2;
-        _state.rewardsToken3 = _rewardsToken3;
     }
 
     event Deposit(address indexed account, uint256 value);
     event Withdraw(address indexed account, uint256 value);
     event Claim(address indexed account, address token, uint256 value);
     event Bond(address indexed account, uint256 start, uint256 value);
-    event Unbond(
-        address indexed account,
-        uint256 start,
-        uint256 value,
-        uint256 newClaimable1,
-        uint256 newClaimable2,
-        uint256 newClaimable3
-    );
+    event Unbond(address indexed account, uint256 start, uint256 value, uint256 newClaimable1, uint256 newClaimable2);
 
     function deposit(uint256 value) external onlyFrozen(msg.sender) notPaused {
         stakingToken().transferFrom(msg.sender, address(this), value);
@@ -70,7 +62,7 @@ contract PoolBonding is Setters, Permission {
     }
 
     function bond(uint256 value) public validBalance {
-        require(inExpansion() == false, "cant deposit during expansion"); //##
+        require(inExpansion() == false, "Cannot bond during expansion"); //##
         // QSD #B
         _bond(value);
     }
@@ -79,10 +71,6 @@ contract PoolBonding is Setters, Permission {
         unfreeze(msg.sender);
 
         uint256 totalRewardedWithPhantom1 = totalRewarded1().add(totalPhantom1());
-
-        // If bonded==0 and rewarded==0 -> Constants.getInitialStakeMultiple
-        // If bonded==0 and rewarded!=0 -> 0
-        // If bonded!=0 and rewarded!=0 -> totalRewardedWithPhantom1.mul(value)
         uint256 newPhantom1 =
             totalBonded() == 0
                 ? totalRewarded1() == 0 ? Constants.getInitialStakeMultiple().mul(value) : 0
@@ -90,20 +78,13 @@ contract PoolBonding is Setters, Permission {
 
         uint256 totalRewardedWithPhantom2 = totalRewarded2().add(totalPhantom2());
         uint256 newPhantom2 =
-            (totalBonded() == 0)
-                ? (totalRewarded2() == 0) ? (Constants.getInitialStakeMultiple().mul(value)) : 0
-                : totalRewardedWithPhantom2.mul(value).div(totalBonded());
-
-        uint256 totalRewardedWithPhantom3 = totalRewarded3().add(totalPhantom3());
-        uint256 newPhantom3 =
             totalBonded() == 0
-                ? totalRewarded3() == 0 ? Constants.getInitialStakeMultiple().mul(value) : 0
-                : totalRewardedWithPhantom3.mul(value).div(totalBonded());
+                ? totalRewarded2() == 0 ? Constants.getInitialStakeMultiple().mul(value) : 0
+                : totalRewardedWithPhantom2.mul(value).div(totalBonded());
 
         incrementBalanceOfBonded(msg.sender, value);
         incrementBalanceOfPhantom1(msg.sender, newPhantom1);
         incrementBalanceOfPhantom2(msg.sender, newPhantom2);
-        incrementBalanceOfPhantom3(msg.sender, newPhantom3);
         decrementBalanceOfStaged(msg.sender, value, "Pool: insufficient staged balance");
 
         emit Bond(msg.sender, epoch().add(1), value);
@@ -118,22 +99,18 @@ contract PoolBonding is Setters, Permission {
 
         uint256 newClaimable1 = balanceOfRewarded1(msg.sender).mul(value).div(balanceOfBonded);
         uint256 newClaimable2 = balanceOfRewarded2(msg.sender).mul(value).div(balanceOfBonded);
-        uint256 newClaimable3 = balanceOfRewarded3(msg.sender).mul(value).div(balanceOfBonded);
 
         uint256 lessPhantom1 = balanceOfPhantom1(msg.sender).mul(value).div(balanceOfBonded);
         uint256 lessPhantom2 = balanceOfPhantom2(msg.sender).mul(value).div(balanceOfBonded);
-        uint256 lessPhantom3 = balanceOfPhantom3(msg.sender).mul(value).div(balanceOfBonded);
 
         incrementBalanceOfStaged(msg.sender, value);
         incrementBalanceOfClaimable1(msg.sender, newClaimable1);
         incrementBalanceOfClaimable2(msg.sender, newClaimable2);
-        incrementBalanceOfClaimable3(msg.sender, newClaimable3);
         decrementBalanceOfBonded(msg.sender, value, "Pool: insufficient bonded balance");
         decrementBalanceOfPhantom1(msg.sender, lessPhantom1, "Pool: insufficient phantom1 balance");
         decrementBalanceOfPhantom2(msg.sender, lessPhantom2, "Pool: insufficient phantom2 balance");
-        decrementBalanceOfPhantom3(msg.sender, lessPhantom3, "Pool: insufficient phantom3 balance");
 
-        emit Unbond(msg.sender, epoch().add(1), value, newClaimable1, newClaimable2, newClaimable3);
+        emit Unbond(msg.sender, epoch().add(1), value, newClaimable1, newClaimable2);
     }
 
     // Function to allow users to move rewards to claimable
@@ -148,7 +125,6 @@ contract PoolBonding is Setters, Permission {
     function claimAll() external {
         claim1(balanceOfClaimable1(msg.sender));
         claim2(balanceOfClaimable2(msg.sender));
-        claim3(balanceOfClaimable3(msg.sender));
     }
 
     function claim1(uint256 value) public onlyFrozen(msg.sender) validBalance {
@@ -163,13 +139,6 @@ contract PoolBonding is Setters, Permission {
         decrementBalanceOfClaimable2(msg.sender, value, "Pool: insufficient claimable balance");
 
         emit Claim(msg.sender, address(rewardsToken2()), value);
-    }
-
-    function claim3(uint256 value) public onlyFrozen(msg.sender) validBalance {
-        rewardsToken3().transfer(msg.sender, value);
-        decrementBalanceOfClaimable3(msg.sender, value, "Pool: insufficient claimable balance");
-
-        emit Claim(msg.sender, address(rewardsToken3()), value);
     }
 
     function emergencyWithdraw(address token, uint256 value) external onlyDao {

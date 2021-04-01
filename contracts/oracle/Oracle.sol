@@ -130,7 +130,7 @@ contract Oracle is IOracle {
         return Constants.getDaiAddress();
     }
 
-    function pair() external view returns (address) {
+    function pair() public view returns (address) {
         return address(_pair);
     }
 

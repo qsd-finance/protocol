@@ -27,7 +27,8 @@ contract Setters is State, Getters {
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
-    function setExpansionState(bool _yesno) internal {  //##
+    function setExpansionState(bool _yesno) internal {
+        //##
         _state.epoch.inExpansion = _yesno;
     }
 
@@ -115,6 +116,18 @@ contract Setters is State, Getters {
         _state.epochs[epoch()].bonded = IPoolGov(poolGov()).totalBonded();
     }
 
+    function incrementEpochsAtPeg() internal {
+        _state.epoch.epochsAtPeg++;
+    }
+
+    function resetEpochsAtPeg() internal {
+        _state.epoch.epochsAtPeg = 0;
+    }
+
+    function setEpochTwap(uint256 price) internal {
+        _state.epoch.epochTwap = price;
+    }
+
     /**
      * Governance
      */
@@ -166,5 +179,13 @@ contract Setters is State, Getters {
 
     function initialized(address candidate) internal {
         _state.candidates[candidate].initialized = true;
+    }
+
+    function dai() public pure returns (address) {
+        return Constants.getDaiAddress();
+    }
+
+    function uniPairAddress() public pure returns (address) {
+        return Constants.getUniPairAddress();
     }
 }

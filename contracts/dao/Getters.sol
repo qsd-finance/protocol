@@ -135,20 +135,19 @@ contract Getters is State {
         return _state.epoch.current;
     }
 
+    function epochsAtPeg() public view returns (uint256) {
+        return _state.epoch.epochsAtPeg;
+    }
+
     function epochTime() public view returns (uint256) {
         Constants.EpochStrategy memory current = Constants.getCurrentEpochStrategy();
         Constants.EpochStrategy memory previous = Constants.getPreviousEpochStrategy();
 
-        return blockTimestamp() < current.start ?
-            epochTimeWithStrategy(previous) :
-            epochTimeWithStrategy(current);
+        return blockTimestamp() < current.start ? epochTimeWithStrategy(previous) : epochTimeWithStrategy(current);
     }
 
     function epochTimeWithStrategy(Constants.EpochStrategy memory strategy) private view returns (uint256) {
-        return blockTimestamp()
-            .sub(strategy.start)
-            .div(strategy.period)
-            .add(strategy.offset);
+        return blockTimestamp().sub(strategy.start).div(strategy.period).add(strategy.offset);
     }
 
     // Overridable for testing

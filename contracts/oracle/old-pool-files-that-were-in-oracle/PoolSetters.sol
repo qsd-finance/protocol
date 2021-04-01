@@ -18,10 +18,10 @@ pragma solidity ^0.5.17;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "./State.sol";
-import "./Getters.sol";
+import "./PoolState.sol";
+import "./PoolGetters.sol";
 
-contract Setters is State, Getters {
+contract PoolSetters is PoolState, PoolGetters {
     using SafeMath for uint256;
 
     /**
@@ -64,14 +64,9 @@ contract Setters is State, Getters {
         _state.balance.staged = _state.balance.staged.sub(amount, reason);
     }
 
-    function incrementBalanceOfClaimable1(address account, uint256 amount) internal {
-        _state.accounts[account].claimable1 = _state.accounts[account].claimable1.add(amount);
-        _state.balance.claimable1 = _state.balance.claimable1.add(amount);
-    }
-
-    function incrementBalanceOfClaimable2(address account, uint256 amount) internal {
-        _state.accounts[account].claimable2 = _state.accounts[account].claimable2.add(amount);
-        _state.balance.claimable2 = _state.balance.claimable2.add(amount);
+    function incrementBalanceOfClaimable(address account, uint256 amount) internal {
+        _state.accounts[account].claimable = _state.accounts[account].claimable.add(amount);
+        _state.balance.claimable = _state.balance.claimable.add(amount);
     }
 
     function incrementBalanceOfClaimable3(address account, uint256 amount) internal {
@@ -79,22 +74,13 @@ contract Setters is State, Getters {
         _state.balance.claimable3 = _state.balance.claimable3.add(amount);
     }
 
-    function decrementBalanceOfClaimable1(
+    function decrementBalanceOfClaimable(
         address account,
         uint256 amount,
         string memory reason
     ) internal {
-        _state.accounts[account].claimable1 = _state.accounts[account].claimable1.sub(amount, reason);
-        _state.balance.claimable1 = _state.balance.claimable1.sub(amount, reason);
-    }
-
-    function decrementBalanceOfClaimable2(
-        address account,
-        uint256 amount,
-        string memory reason
-    ) internal {
-        _state.accounts[account].claimable2 = _state.accounts[account].claimable2.sub(amount, reason);
-        _state.balance.claimable2 = _state.balance.claimable2.sub(amount, reason);
+        _state.accounts[account].claimable = _state.accounts[account].claimable.sub(amount, reason);
+        _state.balance.claimable = _state.balance.claimable.sub(amount, reason);
     }
 
     function decrementBalanceOfClaimable3(
@@ -106,14 +92,9 @@ contract Setters is State, Getters {
         _state.balance.claimable3 = _state.balance.claimable3.sub(amount, reason);
     }
 
-    function incrementBalanceOfPhantom1(address account, uint256 amount) internal {
-        _state.accounts[account].phantom1 = _state.accounts[account].phantom1.add(amount);
-        _state.balance.phantom1 = _state.balance.phantom1.add(amount);
-    }
-
-    function incrementBalanceOfPhantom2(address account, uint256 amount) internal {
-        _state.accounts[account].phantom2 = _state.accounts[account].phantom2.add(amount);
-        _state.balance.phantom2 = _state.balance.phantom2.add(amount);
+    function incrementBalanceOfPhantom(address account, uint256 amount) internal {
+        _state.accounts[account].phantom = _state.accounts[account].phantom.add(amount);
+        _state.balance.phantom = _state.balance.phantom.add(amount);
     }
 
     function incrementBalanceOfPhantom3(address account, uint256 amount) internal {
@@ -121,22 +102,13 @@ contract Setters is State, Getters {
         _state.balance.phantom3 = _state.balance.phantom3.add(amount);
     }
 
-    function decrementBalanceOfPhantom1(
+    function decrementBalanceOfPhantom(
         address account,
         uint256 amount,
         string memory reason
     ) internal {
-        _state.accounts[account].phantom1 = _state.accounts[account].phantom1.sub(amount, reason);
-        _state.balance.phantom1 = _state.balance.phantom1.sub(amount, reason);
-    }
-
-    function decrementBalanceOfPhantom2(
-        address account,
-        uint256 amount,
-        string memory reason
-    ) internal {
-        _state.accounts[account].phantom2 = _state.accounts[account].phantom2.sub(amount, reason);
-        _state.balance.phantom2 = _state.balance.phantom2.sub(amount, reason);
+        _state.accounts[account].phantom = _state.accounts[account].phantom.sub(amount, reason);
+        _state.balance.phantom = _state.balance.phantom.sub(amount, reason);
     }
 
     function decrementBalanceOfPhantom3(

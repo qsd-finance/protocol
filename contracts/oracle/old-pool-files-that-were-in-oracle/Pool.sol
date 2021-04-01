@@ -28,11 +28,13 @@ contract Pool is PoolSetters, Permission {
     constructor(
         IDAO _dao,
         IERC20 _stakingToken,
-        IERC20 _rewardsToken
+        IERC20 _rewardsToken,
+        IERC20 _rewardsToken3
     ) public {
         _state.dao = _dao;
         _state.stakingToken = _stakingToken;
         _state.rewardsToken = _rewardsToken;
+        _state.rewardsToken3 = _rewardsToken3;
     }
 
     bytes32 private constant FILE = "Pool";

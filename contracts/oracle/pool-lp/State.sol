@@ -18,10 +18,10 @@ pragma solidity ^0.5.17;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "../token/IDollar.sol";
-import "./IDAO.sol";
+import "../../token/IDollar.sol";
+import "../IDAO.sol";
 
-contract PoolAccount {
+contract Account {
     enum Status {
         Frozen,
         Fluid,
@@ -30,34 +30,39 @@ contract PoolAccount {
 
     struct State {
         uint256 staged;
-        uint256 claimable;
+        uint256 claimable1;
+        uint256 claimable2;
         uint256 bonded;
-        uint256 phantom;
+        uint256 phantom1;
+        uint256 phantom2;
         uint256 fluidUntil;
     }
 }
 
-contract PoolStorage {
+contract Storage {
     struct Balance {
         uint256 staged;
-        uint256 claimable;
+        uint256 claimable1;
+        uint256 claimable2;
         uint256 bonded;
-        uint256 phantom;
+        uint256 phantom1;
+        uint256 phantom2;
     }
 
     struct State {
         IDAO dao;
 
         IERC20 stakingToken;
-        IERC20 rewardsToken;
+        IERC20 rewardsToken1;
+        IERC20 rewardsToken2;
 
         Balance balance;
         bool paused;
 
-        mapping(address => PoolAccount.State) accounts;
+        mapping(address => Account.State) accounts;
     }
 }
 
-contract PoolState {
-    PoolStorage.State _state;
+contract State {
+    Storage.State _state;
 }

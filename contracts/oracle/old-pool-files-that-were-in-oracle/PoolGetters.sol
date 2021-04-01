@@ -30,7 +30,7 @@ contract PoolGetters is PoolState {
      * Global
      */
 
-    function dai() public view returns (address) {
+    function dai() public pure returns (address) {
         return Constants.getDaiAddress();
     }
 
@@ -50,12 +50,30 @@ contract PoolGetters is PoolState {
         return _state.balance.claimable;
     }
 
+    function totalClaimable3() public view returns (uint256) {
+        return _state.balance.claimable3;
+    }
+
     function totalPhantom() public view returns (uint256) {
         return _state.balance.phantom;
     }
 
+    function totalPhantom3() public view returns (uint256) {
+        return _state.balance.phantom3;
+    }
+
     function totalRewarded() public view returns (uint256) {
         return rewardsToken().balanceOf(address(this)).sub(totalClaimable());
+    }
+
+    function totalRewarded3() public view returns (uint256) {
+        // If staking token and rewards token are the same
+        if (stakingToken() == rewardsToken3()) {
+            return
+                rewardsToken3().balanceOf(address(this)).sub(totalClaimable3()).sub(totalBonded()).sub(totalStaged());
+        }
+
+        return rewardsToken3().balanceOf(address(this)).sub(totalClaimable3());
     }
 
     function paused() public view returns (bool) {
@@ -74,12 +92,20 @@ contract PoolGetters is PoolState {
         return _state.accounts[account].claimable;
     }
 
+    function balanceOfClaimable3(address account) public view returns (uint256) {
+        return _state.accounts[account].claimable3;
+    }
+
     function balanceOfBonded(address account) public view returns (uint256) {
         return _state.accounts[account].bonded;
     }
 
     function balanceOfPhantom(address account) public view returns (uint256) {
         return _state.accounts[account].phantom;
+    }
+
+    function balanceOfPhantom3(address account) public view returns (uint256) {
+        return _state.accounts[account].phantom3;
     }
 
     function balanceOfRewarded(address account) public view returns (uint256) {
@@ -92,6 +118,22 @@ contract PoolGetters is PoolState {
         uint256 balanceOfRewardedWithPhantom = totalRewardedWithPhantom.mul(balanceOfBonded(account)).div(totalBonded);
 
         uint256 balanceOfPhantom = balanceOfPhantom(account);
+        if (balanceOfRewardedWithPhantom > balanceOfPhantom) {
+            return balanceOfRewardedWithPhantom.sub(balanceOfPhantom);
+        }
+        return 0;
+    }
+
+    function balanceOfRewarded3(address account) public view returns (uint256) {
+        uint256 totalBonded = totalBonded();
+        if (totalBonded == 0) {
+            return 0;
+        }
+
+        uint256 totalRewardedWithPhantom = totalRewarded3().add(totalPhantom3());
+        uint256 balanceOfRewardedWithPhantom = totalRewardedWithPhantom.mul(balanceOfBonded(account)).div(totalBonded);
+
+        uint256 balanceOfPhantom = balanceOfPhantom3(account);
         if (balanceOfRewardedWithPhantom > balanceOfPhantom) {
             return balanceOfRewardedWithPhantom.sub(balanceOfPhantom);
         }
@@ -138,5 +180,9 @@ contract PoolGetters is PoolState {
 
     function rewardsToken() public view returns (IERC20) {
         return _state.rewardsToken;
+    }
+
+    function rewardsToken3() public view returns (IERC20) {
+        return _state.rewardsToken3;
     }
 }

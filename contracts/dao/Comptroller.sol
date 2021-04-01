@@ -20,21 +20,37 @@ pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./Setters.sol";
 import "./IERC20Mintable.sol";
+import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "../external/Require.sol";
+import "../external/UniswapV2Library.sol";
+import "../external/UniswapV2Router.sol";
+import "../oracle/Oracle.sol";
 
 contract Comptroller is Setters {
     using SafeMath for uint256;
 
     bytes32 private constant FILE = "Comptroller";
-    
+
+    using SafeERC20 for IERC20;
+
+    IUniswapV2Router02 private constant router = IUniswapV2Router02(0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F); //## pcs router
+
+    event busdDistributed(uint256 sentToPoolBonding, uint256 sentToPoolLP);
 
     function mintToAccount(address account, uint256 amount) internal {
         dollar().mint(account, amount);
         balanceCheck();
     }
 
-    function increaseSupply(uint256 newSupply) internal returns (uint256, uint256) {
-        setExpansionState(true);    //##
+    function increaseSupply(uint256 newSupply)
+        internal
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        setExpansionState(true); //##
         // QSD #7
         // If we're still bootstrapping
         /*if (bootstrappingAt(epoch().sub(1))) {
@@ -50,31 +66,77 @@ contract Comptroller is Setters {
             // Bonded will always be the new supply as well
             return (0, newSupply);
         } else {*/
-            // QSD #B
+        // QSD #B
 
-            // 0-a. Pay out to Pool (LP)
-            uint256 poolLPReward = newSupply.mul(Constants.getPoolLPRatio()).div(100);
-            mintToPoolLP(poolLPReward);
+        // Take 25% and sell it for BUSD //##J
+        // The rest go off the remaining supply //##J
+        uint256 bankSupply = newSupply.div(4); //FIX: MULTIPLY AND DIVIDE BY 100
+        uint256 remainingSupply = newSupply.sub(bankSupply);
 
-            // 0-b. Pay out to Pool (Bonding)
-            uint256 poolBondingReward = newSupply.mul(Constants.getPoolBondingRatio()).div(100);
-            mintToPoolBonding(poolBondingReward);
+        // Mint to DAO
 
-            // 0-c. Pay out to Treasury
-            uint256 treasuryReward = newSupply.mul(Constants.getTreasuryRatio()).div(100);
-            mintToTreasury(treasuryReward);
+        // Call function in liquidity to buy busd
 
-            // 0-d. Pay out to Gov Stakers
-            uint256 govStakerReward = newSupply.mul(Constants.getGovStakingRatio()).div(100);
-            mintToPoolGov(govStakerReward);
+        // Buy BUSD with the bank supply first
+        // COPY ONE SIDED CODE FROM LIQUIDITY
 
-            balanceCheck();
-            return (0, newSupply);
+        uint256 qsdMinted = mintToDAOBank(bankSupply);
+        uint256 boughtAmount = buyBusd(qsdMinted); // FIX: Add buyBusd to this contract
+
+        // 0-a. Pay out to Pool (LP)
+        uint256 poolLPReward = remainingSupply.mul(Constants.getPoolLPRatio()).div(100);
+        mintToPoolLP(poolLPReward);
+
+        // 0-b. Pay out to Pool (Bonding)
+        uint256 poolBondingReward = remainingSupply.mul(Constants.getPoolBondingRatio()).div(100);
+        mintToPoolBonding(poolBondingReward);
+
+        // 0-c. Pay out to Treasury
+        uint256 treasuryReward = remainingSupply.mul(Constants.getTreasuryRatio()).div(100);
+        mintToTreasury(treasuryReward);
+
+        // 0-d. Pay out to Gov Stakers
+        uint256 govStakerReward = remainingSupply.mul(Constants.getGovStakingRatio()).div(100);
+        mintToPoolGov(govStakerReward);
+
+        balanceCheck();
+        return (0, remainingSupply, boughtAmount);
         //}
     }
 
+    function distributeBusdRewards() internal {
+        // Get BUSD address
+        address busdAddress = Constants.getDaiAddress();
+
+        IERC20 BUSD = IERC20(busdAddress);
+
+        uint256 balance = BUSD.balanceOf(address(this));
+
+        uint256 epochsAtPeg = Getters.epochsAtPeg();
+
+        // balance * [((epochsatpeg - 1) ** 1.25) * (0.75.div(100)) + (4.div(100))]
+        uint256 distributionRate =
+            ((epochsAtPeg.sub(1))**(uint256(1).add((uint256(1).div(4))))).mul((uint256(75).div(10000))).add(
+                (uint256(4).div(100))
+            );
+
+        uint256 busdToDistribute = balance.mul(distributionRate);
+
+        if (busdToDistribute > 0) {
+            uint256 transferToPoolBonding = busdToDistribute.div(Constants.getBusdPoolBondingRatio());
+            uint256 transferToPoolLP = busdToDistribute.div(Constants.getBusdPoolLpRatio());
+
+            bool poolBondingOutcome = BUSD.transfer(poolBonding(), transferToPoolBonding);
+            bool lpOutcome = BUSD.transfer(poolLP(), transferToPoolLP);
+
+            if (poolBondingOutcome && lpOutcome) {
+                emit busdDistributed(transferToPoolBonding, transferToPoolLP);
+            }
+        }
+    }
+
     function distributeGovernanceTokens() internal {
-        setExpansionState(false);   //##
+        setExpansionState(false); //##
         // Assume blocktime is 15 seconds
         uint256 blocksPerEpoch = Constants.getCurrentEpochStrategy().period.div(15);
         uint256 govTokenToMint = blocksPerEpoch.mul(Constants.getGovernanceTokenPerBlock());
@@ -110,6 +172,13 @@ contract Comptroller is Setters {
         }
     }
 
+    function mintToDAOBank(uint256 amount) private returns (uint256) {
+        if (amount > 0) {
+            dollar().mint(address(this), amount);
+            return amount;
+        }
+    }
+
     function mintToPoolLP(uint256 amount) private {
         if (amount > 0) {
             dollar().mint(poolLP(), amount);
@@ -142,5 +211,41 @@ contract Comptroller is Setters {
         if (amount > 0) {
             IERC20Mintable(address(governance())).mint(poolBonding(), amount);
         }
+    }
+
+    function buyBusd(uint256 dollarAmount) internal returns (uint256) {
+        // Buy busd for bank reserves
+        IUniswapV2Pair pair = IUniswapV2Pair(_state.provider.uniPairAddress);
+
+        address dai = Setters.dai();
+        address dollar = pair.token0() == dai ? pair.token1() : pair.token0();
+
+        // Compute optimal amount of dollar to be converted to DAI
+        // (uint256 r0, uint256 r1, ) = pair.getReserves();
+        // uint256 rIn = pair.token0() == dollar ? r0 : r1;
+        // uint256 aIn = getOptimalSwapAmount(rIn, dollarAmount);
+
+        // Convert that portion into DAI
+        address[] memory path = new address[](2);
+        path[0] = dollar;
+        path[1] = dai;
+
+        IERC20(dollar).safeApprove(address(router), 0);
+        IERC20(dollar).safeApprove(address(router), uint256(-1));
+        uint256[] memory outputs = router.swapExactTokensForTokens(dollarAmount, 0, path, address(this), now + 60);
+
+        // // Supply liquidity
+        // uint256 supplyDollarAmount = dollarAmount.sub(aIn);
+        uint256 boughtAmount = outputs[1];
+
+        // IERC20(dollar).safeApprove(address(router), 0);
+        // IERC20(dollar).safeApprove(address(router), supplyDollarAmount);
+
+        // IERC20(dai).safeApprove(address(router), 0);
+        // IERC20(dai).safeApprove(address(router), supplyDaiAmount);
+        // (, , uint256 lpAmountMinted) =
+        //     router.addLiquidity(dollar, dai, supplyDollarAmount, supplyDaiAmount, 0, 0, address(this), now + 60);
+
+        return boughtAmount;
     }
 }

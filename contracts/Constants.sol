@@ -23,7 +23,8 @@ library Constants {
     /* Chain */
     uint256 private constant CHAIN_ID = 56; //##  BSC Mainnet
 
-    uint256 private constant EXPANSION_PRICE = 102e16;  //##
+    uint256 private constant EXPANSION_PRICE = 102e16; //##
+    uint256 private constant BOTTOM_PEG_PRICE = 98e16; //##J
 
     /* Bootstrapping */
     // QSD #3
@@ -50,7 +51,7 @@ library Constants {
 
     // QSD #1
     uint256 private constant CURRENT_EPOCH_OFFSET = 0;
-    uint256 private constant CURRENT_EPOCH_START =  1612008000;// 2020/01/30 12:00 UTC;
+    uint256 private constant CURRENT_EPOCH_START = 1612008000; // 2020/01/30 12:00 UTC;
     uint256 private constant CURRENT_EPOCH_PERIOD = 14400; // 4 hours
 
     /* Governance */
@@ -79,11 +80,15 @@ library Constants {
 
     /* Regulator (post-bootstrap) */
     // QSD #2
-    uint256 private constant SUPPLY_CHANGE_LIMIT = 54e15; // 5.4% Expansion/Contraction limit
+    uint256 private constant SUPPLY_CHANGE_LIMIT = 50e15; // 5.4% Expansion/Contraction limit
+    uint256 private constant EXPANSION_RATE = 10; //##J / To divide by 10 the original expansion rate
     uint256 private constant POOL_BONDING_RATIO = 40; //67; // 67%  //##
     uint256 private constant POOL_LP_RATIO = 35; //23; // 23%       //##
     uint256 private constant TREASURY_RATIO = 15; //5; // 5%        //##
     uint256 private constant GOV_STAKING_RATIO = 10; //5; // 5%     //##
+
+    uint256 private constant BUSD_REWARDS_POOL_LP_RATIO = 50; //50%
+    uint256 private constant BUSD_REWARDS_POOL_BONDING_RATIO = 50; //50%
 
     /* External */
     address private constant TREASURY_ADDRESS = address(0x247C08e7f043B960457676516A3258484aD8e7Bb); //##
@@ -92,8 +97,14 @@ library Constants {
      * Getters
      */
 
-     function getExpansionPrice() internal pure returns (Decimal.D256 memory) {     //##
-        return Decimal.D256({value: EXPANSION_PRICE});
+    function getExpansionPrice() internal pure returns (Decimal.D256 memory) {
+        //##
+        return Decimal.D256({ value: EXPANSION_PRICE });
+    }
+
+    function getBottomPegPrice() internal pure returns (Decimal.D256 memory) {
+        //##
+        return Decimal.D256({ value: BOTTOM_PEG_PRICE });
     }
 
     function getDaiAddress() internal pure returns (address) {
@@ -105,23 +116,25 @@ library Constants {
     }
 
     function getPreviousEpochStrategy() internal pure returns (EpochStrategy memory) {
-        return EpochStrategy({
-            offset: PREVIOUS_EPOCH_OFFSET,
-            start: PREVIOUS_EPOCH_START,
-            period: PREVIOUS_EPOCH_PERIOD
-        });
+        return
+            EpochStrategy({
+                offset: PREVIOUS_EPOCH_OFFSET,
+                start: PREVIOUS_EPOCH_START,
+                period: PREVIOUS_EPOCH_PERIOD
+            });
     }
 
     function getCurrentEpochStrategy() internal pure returns (EpochStrategy memory) {
-        return EpochStrategy({
-            offset: CURRENT_EPOCH_OFFSET,
-            start: CURRENT_EPOCH_START,
-            period: CURRENT_EPOCH_PERIOD
-        });
+        return
+            EpochStrategy({ offset: CURRENT_EPOCH_OFFSET, start: CURRENT_EPOCH_START, period: CURRENT_EPOCH_PERIOD });
     }
 
     function getInitialStakeMultiple() internal pure returns (uint256) {
         return INITIAL_STAKE_MULTIPLE;
+    }
+
+    function getExpansionRate() internal pure returns (uint256) {
+        return EXPANSION_RATE;
     }
 
     function getBootstrappingPeriod() internal pure returns (uint256) {
@@ -129,7 +142,7 @@ library Constants {
     }
 
     function getBootstrappingPrice() internal pure returns (Decimal.D256 memory) {
-        return Decimal.D256({value: BOOTSTRAPPING_PRICE});
+        return Decimal.D256({ value: BOOTSTRAPPING_PRICE });
     }
 
     function getGovernancePeriod() internal pure returns (uint256) {
@@ -141,15 +154,15 @@ library Constants {
     }
 
     function getGovernanceQuorum() internal pure returns (Decimal.D256 memory) {
-        return Decimal.D256({value: GOVERNANCE_QUORUM});
+        return Decimal.D256({ value: GOVERNANCE_QUORUM });
     }
 
     function getGovernanceProposalThreshold() internal pure returns (Decimal.D256 memory) {
-        return Decimal.D256({value: GOVERNANCE_PROPOSAL_THRESHOLD});
+        return Decimal.D256({ value: GOVERNANCE_PROPOSAL_THRESHOLD });
     }
 
     function getGovernanceSuperMajority() internal pure returns (Decimal.D256 memory) {
-        return Decimal.D256({value: GOVERNANCE_SUPER_MAJORITY});
+        return Decimal.D256({ value: GOVERNANCE_SUPER_MAJORITY });
     }
 
     function getGovernanceEmergencyDelay() internal pure returns (uint256) {
@@ -167,13 +180,13 @@ library Constants {
     function getPoolExitLockupEpochs() internal pure returns (uint256) {
         return POOL_EXIT_LOCKUP_EPOCHS;
     }
-    
+
     function getDebtRatioCap() internal pure returns (Decimal.D256 memory) {
-        return Decimal.D256({value: DEBT_RATIO_CAP});
+        return Decimal.D256({ value: DEBT_RATIO_CAP });
     }
 
     function getSupplyChangeLimit() internal pure returns (Decimal.D256 memory) {
-        return Decimal.D256({value: SUPPLY_CHANGE_LIMIT});
+        return Decimal.D256({ value: SUPPLY_CHANGE_LIMIT });
     }
 
     function getPoolLPRatio() internal pure returns (uint256) {
@@ -206,5 +219,13 @@ library Constants {
 
     function getGovernanceTokenPerBlock() internal pure returns (uint256) {
         return GOVERNANCE_DISTRIBUTED_PER_BLOCK;
+    }
+
+    function getBusdPoolLpRatio() internal pure returns (uint256) {
+        return BUSD_REWARDS_POOL_LP_RATIO;
+    }
+
+    function getBusdPoolBondingRatio() internal pure returns (uint256) {
+        return BUSD_REWARDS_POOL_BONDING_RATIO;
     }
 }

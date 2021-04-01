@@ -35,7 +35,7 @@ contract Getters is State {
         return _state.dao.epochInExpansion();
     }
 
-    function dai() public view returns (address) {
+    function dai() public pure returns (address) {
         return Constants.getDaiAddress();
     }
 
@@ -59,20 +59,12 @@ contract Getters is State {
         return _state.balance.claimable2;
     }
 
-    function totalClaimable3() public view returns (uint256) {
-        return _state.balance.claimable3;
-    }
-
     function totalPhantom1() public view returns (uint256) {
         return _state.balance.phantom1;
     }
 
     function totalPhantom2() public view returns (uint256) {
         return _state.balance.phantom2;
-    }
-
-    function totalPhantom3() public view returns (uint256) {
-        return _state.balance.phantom3;
     }
 
     function totalRewarded1() public view returns (uint256) {
@@ -95,16 +87,6 @@ contract Getters is State {
         return rewardsToken2().balanceOf(address(this)).sub(totalClaimable2());
     }
 
-    function totalRewarded3() public view returns (uint256) {
-        // If staking token and rewards token are the same
-        if (stakingToken() == rewardsToken3()) {
-            return
-                rewardsToken3().balanceOf(address(this)).sub(totalClaimable3()).sub(totalBonded()).sub(totalStaged());
-        }
-
-        return rewardsToken3().balanceOf(address(this)).sub(totalClaimable3());
-    }
-
     function paused() public view returns (bool) {
         return _state.paused;
     }
@@ -125,10 +107,6 @@ contract Getters is State {
         return _state.accounts[account].claimable2;
     }
 
-    function balanceOfClaimable3(address account) public view returns (uint256) {
-        return _state.accounts[account].claimable3;
-    }
-
     function balanceOfBonded(address account) public view returns (uint256) {
         return _state.accounts[account].bonded;
     }
@@ -139,10 +117,6 @@ contract Getters is State {
 
     function balanceOfPhantom2(address account) public view returns (uint256) {
         return _state.accounts[account].phantom2;
-    }
-
-    function balanceOfPhantom3(address account) public view returns (uint256) {
-        return _state.accounts[account].phantom3;
     }
 
     function balanceOfRewarded1(address account) public view returns (uint256) {
@@ -177,22 +151,6 @@ contract Getters is State {
         return 0;
     }
 
-    function balanceOfRewarded3(address account) public view returns (uint256) {
-        uint256 totalBonded = totalBonded();
-        if (totalBonded == 0) {
-            return 0;
-        }
-
-        uint256 totalRewardedWithPhantom = totalRewarded3().add(totalPhantom3());
-        uint256 balanceOfRewardedWithPhantom = totalRewardedWithPhantom.mul(balanceOfBonded(account)).div(totalBonded);
-
-        uint256 balanceOfPhantom = balanceOfPhantom3(account);
-        if (balanceOfRewardedWithPhantom > balanceOfPhantom) {
-            return balanceOfRewardedWithPhantom.sub(balanceOfPhantom);
-        }
-        return 0;
-    }
-
     function statusOf(address account) public view returns (Account.Status) {
         return epoch() >= _state.accounts[account].fluidUntil ? Account.Status.Frozen : Account.Status.Fluid;
     }
@@ -205,7 +163,7 @@ contract Getters is State {
         return dao().epoch();
     }
 
-    function bootstrappingAt(uint256 epoch) internal returns (bool) {
+    function bootstrappingAt(uint256 epoch) internal view returns (bool) {
         return dao().bootstrappingAt(epoch);
     }
 
@@ -227,9 +185,5 @@ contract Getters is State {
 
     function rewardsToken2() public view returns (IERC20) {
         return _state.rewardsToken2;
-    }
-
-    function rewardsToken3() public view returns (IERC20) {
-        return _state.rewardsToken3;
     }
 }

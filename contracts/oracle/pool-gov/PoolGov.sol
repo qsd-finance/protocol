@@ -17,19 +17,16 @@
 pragma solidity ^0.5.17;
 pragma experimental ABIEncoderV2;
 
-import "./IOracle.sol";
-import "../external/Decimal.sol";
+import "./Pool.sol";
 
-contract IDAO {
-    function epoch() external view returns (uint256);
+contract PoolGov is Pool {
+    using SafeMath for uint256;
 
-    function oracle() external view returns (IOracle);
+    bytes32 private constant FILE = "Pool Gov";
 
-    function bootstrappingAt(uint256) external view returns (bool);
-
-    function oracleCaptureP() public returns (Decimal.D256 memory);
-
-    function epochInExpansion() public view returns (bool); //##
-
-    function epochsAtPeg() public view returns (uint256);
+    constructor(
+        IDAO _dao,
+        IERC20 _stakingToken,
+        IERC20 _rewardsToken
+    ) public Pool(_dao, _stakingToken, _rewardsToken) {}
 }

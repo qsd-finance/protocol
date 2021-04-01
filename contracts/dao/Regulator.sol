@@ -27,7 +27,14 @@ contract Regulator is Comptroller {
     using SafeMath for uint256;
     using Decimal for Decimal.D256;
 
-    event SupplyIncrease(uint256 indexed epoch, uint256 price, uint256 newRedeemable, uint256 lessDebt, uint256 newBonded);
+    event SupplyIncrease(
+        uint256 indexed epoch,
+        uint256 price,
+        uint256 newRedeemable,
+        uint256 lessDebt,
+        uint256 newBonded,
+        uint256 newBusd //##J
+    );
     event SupplyDecrease(uint256 indexed epoch, uint256 price, uint256 newDebt);
     event SupplyNeutral(uint256 indexed epoch);
 
@@ -35,41 +42,51 @@ contract Regulator is Comptroller {
 
     function step() internal {
         Decimal.D256 memory price = oracleCapture();
-        Decimal.D256 memory expansionPrice = Constants.getExpansionPrice();   //##
+        Decimal.D256 memory expansionPrice = Constants.getExpansionPrice(); //##
+        Decimal.D256 memory bottomPegPrice = Constants.getBottomPegPrice(); //##
 
-        //if (price.greaterThan(Decimal.one())) {
-        //if (price.greaterThan(Decimal.one().mul(100).div(98))) {   //##
-        if (price.greaterThan(expansionPrice)) {   //##
+        // Update epoch TWAP state variable
+        Setters.setEpochTwap(price.value);
+
+        if (price.greaterThan(expansionPrice)) {
+            // Reset epochsAtPeg to 0
+            Setters.resetEpochsAtPeg();
+
             // Expand supply
             growSupply(price);
-            return;
-        }
+        } else if (price.greaterThan(bottomPegPrice) && price.lessThan(expansionPrice)) {
+            // We're at peg, increase the counter
+            Setters.incrementEpochsAtPeg();
 
-        //if (price.lessThan(Decimal.one())) {
-        //if (price.lessThan(Decimal.one().mul(100).div(98))) {    //##
-        if (price.lessThan(expansionPrice)) {    //##
+            Comptroller.distributeBusdRewards();
+        } else {
+            // Not a peg, reset counter
+            Setters.resetEpochsAtPeg();
             // Distribute governance tokens to stakers
             distributeGovernanceTokens();
-            return;
         }
 
         emit SupplyNeutral(epoch());
+        return;
     }
 
     function growSupply(Decimal.D256 memory price) private {
-        Decimal.D256 memory expansionPrice = Constants.getExpansionPrice();   //##
-        Decimal.D256 memory delta = limit(price.sub( expansionPrice ), price); //## limit(price.sub(Decimal.one()), price);
+        Decimal.D256 memory expansionPrice = Constants.getExpansionPrice(); //##
+        uint256 expansionRate = Constants.getExpansionRate(); //##J
+        Decimal.D256 memory priceMinusExpansion = price.sub(expansionPrice); //##J
+        Decimal.D256 memory delta = limit(priceMinusExpansion.div(expansionRate)); //##J //## limit(price.sub(Decimal.one()), price);
         uint256 newSupply = delta.mul(totalNet()).asUint256();
-        (uint256 newRedeemable, uint256 newBonded) = increaseSupply(newSupply);
-        emit SupplyIncrease(epoch(), price.value, newRedeemable, 0, newBonded);
+        (uint256 newRedeemable, uint256 newBonded, uint256 newBusd) = increaseSupply(newSupply);
+        emit SupplyIncrease(epoch(), price.value, newRedeemable, 0, newBonded, newBusd);
     }
 
-    function limit(Decimal.D256 memory delta, Decimal.D256 memory price) private view returns (Decimal.D256 memory) {
+    function limit(Decimal.D256 memory delta) private view returns (Decimal.D256 memory) {
         Decimal.D256 memory supplyChangeLimit = Constants.getSupplyChangeLimit();
         return delta.greaterThan(supplyChangeLimit) ? supplyChangeLimit : delta;
     }
 
-    function oracleCapture() private returns (Decimal.D256 memory) {
+    function oracleCapture() internal returns (Decimal.D256 memory) {
+        //#J changed to internal function to match inherited
         (Decimal.D256 memory price, bool valid) = oracle().capture();
 
         /*if (bootstrappingAt(epoch().sub(1))) {
@@ -83,11 +100,7 @@ contract Regulator is Comptroller {
     }
 
     function oracleCaptureP() public returns (Decimal.D256 memory) {
-        Require.that(
-            msg.sender == poolBonding(),
-            FILE,
-            "Not pool bonding"
-        );
+        Require.that(msg.sender == poolBonding(), FILE, "Not pool bonding");
 
         return oracleCapture();
     }

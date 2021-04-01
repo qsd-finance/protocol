@@ -21,49 +21,36 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../../token/IDollar.sol";
 import "../IDAO.sol";
 
-contract Account {
+contract PoolAccount {
     enum Status { Frozen, Fluid, Locked }
 
     struct State {
         uint256 staged;
-        uint256 claimable1;
-        uint256 claimable2;
+        uint256 claimable;
         uint256 bonded;
-        uint256 phantom1;
-        uint256 phantom2;
+        uint256 phantom;
         uint256 fluidUntil;
-        // New addition
-        uint256 claimable3;
-        uint256 phantom3;
     }
 }
 
-contract Storage {
+contract PoolStorage {
     struct Balance {
         uint256 staged;
-        uint256 claimable1;
-        uint256 claimable2;
+        uint256 claimable;
         uint256 bonded;
-        uint256 phantom1;
-        uint256 phantom2;
-        // New addition
-        uint256 claimable3;
-        uint256 phantom3;
+        uint256 phantom;
     }
 
     struct State {
         IDAO dao;
         IERC20 stakingToken;
-        IERC20 rewardsToken1;
-        IERC20 rewardsToken2;
+        IERC20 rewardsToken;
         Balance balance;
         bool paused;
-        mapping(address => Account.State) accounts;
-        // New addition
-        IERC20 rewardsToken3;
+        mapping(address => PoolAccount.State) accounts;
     }
 }
 
-contract State {
-    Storage.State _state;
+contract PoolState {
+    PoolStorage.State _state;
 }

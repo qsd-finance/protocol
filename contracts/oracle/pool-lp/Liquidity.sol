@@ -21,13 +21,13 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
-import "../external/UniswapV2Library.sol";
-import "../external/UniswapV2Router.sol";
-import "../Constants.sol";
+import "../../external/UniswapV2Library.sol";
+import "../../external/UniswapV2Router.sol";
+import "../../Constants.sol";
 import "./Permission.sol";
-import "./PoolSetters.sol";
+import "./Setters.sol";
 
-contract Liquidity is PoolSetters, Permission {
+contract Liquidity is Setters, Permission {
     using SafeERC20 for IERC20;
 
     bytes32 private constant FILE = "Liquidity";
@@ -40,33 +40,33 @@ contract Liquidity is PoolSetters, Permission {
     function provide(uint256 value) external onlyFrozen(msg.sender) notPaused validBalance {
         Require.that(totalBonded() > 0, FILE, "insufficient total bonded");
 
-        Require.that(totalRewarded() > 0, FILE, "insufficient total rewarded");
+        Require.that(totalRewarded1() > 0, FILE, "insufficient total rewarded");
 
-        Require.that(balanceOfRewarded(msg.sender) >= value, FILE, "insufficient rewarded balance");
+        Require.that(balanceOfRewarded1(msg.sender) >= value, FILE, "insufficient rewarded balance");
 
         (uint256 lessDai, uint256 newUniv2) = addLiquidity(value);
 
-        uint256 totalRewardedWithPhantom = totalRewarded().add(totalPhantom()).add(value);
+        uint256 totalRewardedWithPhantom = totalRewarded1().add(totalPhantom1()).add(value);
         uint256 newPhantomFromBonded = totalRewardedWithPhantom.mul(newUniv2).div(totalBonded());
 
         incrementBalanceOfBonded(msg.sender, newUniv2);
-        incrementBalanceOfPhantom(msg.sender, value.add(newPhantomFromBonded));
+        incrementBalanceOfPhantom1(msg.sender, value.add(newPhantomFromBonded));
 
         emit Provide(msg.sender, value, lessDai, newUniv2);
     }
 
     function provideOneSided(uint256 value) external onlyFrozen(msg.sender) notPaused validBalance {
         Require.that(totalBonded() > 0, FILE, "insufficient total bonded");
-        Require.that(totalRewarded() > 0, FILE, "insufficient total rewarded");
-        Require.that(balanceOfRewarded(msg.sender) >= value, FILE, "insufficient rewarded balance");
+        Require.that(totalRewarded1() > 0, FILE, "insufficient total rewarded");
+        Require.that(balanceOfRewarded1(msg.sender) >= value, FILE, "insufficient rewarded balance");
 
         uint256 newUniv2 = optimalOneSidedAddLiquidity(value);
 
-        uint256 totalRewardedWithPhantom = totalRewarded().add(totalPhantom()).add(value);
+        uint256 totalRewardedWithPhantom = totalRewarded1().add(totalPhantom1()).add(value);
         uint256 newPhantomFromBonded = totalRewardedWithPhantom.mul(newUniv2).div(totalBonded());
 
         incrementBalanceOfBonded(msg.sender, newUniv2);
-        incrementBalanceOfPhantom(msg.sender, value.add(newPhantomFromBonded));
+        incrementBalanceOfPhantom1(msg.sender, value.add(newPhantomFromBonded));
 
         emit Provide(msg.sender, value, 0, newUniv2);
     }

@@ -41,53 +41,67 @@ contract Bonding is Setters, Permission {
     }
 
     function deposit(uint256 value) external onlyFrozenOrLocked(msg.sender) {
-        dollar().transferFrom(msg.sender, address(this), value);
-        incrementBalanceOfStaged(msg.sender, value);
+        // Disabling bonding on DAO ##J
+        revert("DAO bonding functinality disabled");
 
-        emit Deposit(msg.sender, value);
+        // dollar().transferFrom(msg.sender, address(this), value);
+        // incrementBalanceOfStaged(msg.sender, value);
+
+        // emit Deposit(msg.sender, value);
     }
 
     function withdraw(uint256 value) external onlyFrozenOrLocked(msg.sender) {
-        dollar().transfer(msg.sender, value);
-        decrementBalanceOfStaged(msg.sender, value, "Bonding: insufficient staged balance");
+        // Disabling bonding on DAO ##J
+        revert("DAO bonding functinality disabled");
 
-        emit Withdraw(msg.sender, value);
+        // dollar().transfer(msg.sender, value);
+        // decrementBalanceOfStaged(msg.sender, value, "Bonding: insufficient staged balance");
+
+        // emit Withdraw(msg.sender, value);
     }
 
     function bond(uint256 value) external onlyFrozenOrFluid(msg.sender) {
-        unfreeze(msg.sender);
+        // Disabling bonding on DAO ##J
+        revert("DAO bonding functinality disabled");
 
-        uint256 balance =
-            totalBonded() == 0
-                ? value.mul(Constants.getInitialStakeMultiple())
-                : value.mul(totalSupply() > 0 ? totalSupply() : 1).div(totalBonded());
+        // unfreeze(msg.sender);
 
-        incrementBalanceOf(msg.sender, balance);
-        incrementTotalBonded(value);
-        decrementBalanceOfStaged(msg.sender, value, "Bonding: insufficient staged balance");
+        // uint256 balance =
+        //     totalBonded() == 0
+        //         ? value.mul(Constants.getInitialStakeMultiple())
+        //         : value.mul(totalSupply() > 0 ? totalSupply() : 1).div(totalBonded());
 
-        emit Bond(msg.sender, epoch().add(1), balance, value);
+        // incrementBalanceOf(msg.sender, balance);
+        // incrementTotalBonded(value);
+        // decrementBalanceOfStaged(msg.sender, value, "Bonding: insufficient staged balance");
+
+        // emit Bond(msg.sender, epoch().add(1), balance, value);
     }
 
     function unbond(uint256 value) external onlyFrozenOrFluid(msg.sender) {
-        unfreeze(msg.sender);
+        // Disabling bonding on DAO ##J
+        revert("DAO bonding functinality disabled");
 
-        uint256 staged = value.mul(balanceOfBonded(msg.sender)).div(balanceOf(msg.sender));
-        incrementBalanceOfStaged(msg.sender, staged);
-        decrementTotalBonded(staged, "Bonding: insufficient total bonded");
-        decrementBalanceOf(msg.sender, value, "Bonding: insufficient balance");
+        // unfreeze(msg.sender);
 
-        emit Unbond(msg.sender, epoch().add(1), value, staged);
+        // uint256 staged = value.mul(balanceOfBonded(msg.sender)).div(balanceOf(msg.sender));
+        // incrementBalanceOfStaged(msg.sender, staged);
+        // decrementTotalBonded(staged, "Bonding: insufficient total bonded");
+        // decrementBalanceOf(msg.sender, value, "Bonding: insufficient balance");
+
+        // emit Unbond(msg.sender, epoch().add(1), value, staged);
     }
 
     function unbondUnderlying(uint256 value) external onlyFrozenOrFluid(msg.sender) {
-        unfreeze(msg.sender);
+        // Disabling bonding on DAO ##J
+        revert("DAO bonding functinality disabled");
+        // unfreeze(msg.sender);
 
-        uint256 balance = value.mul(totalSupply()).div(totalBonded());
-        incrementBalanceOfStaged(msg.sender, value);
-        decrementTotalBonded(value, "Bonding: insufficient total bonded");
-        decrementBalanceOf(msg.sender, balance, "Bonding: insufficient balance");
+        // uint256 balance = value.mul(totalSupply()).div(totalBonded());
+        // incrementBalanceOfStaged(msg.sender, value);
+        // decrementTotalBonded(value, "Bonding: insufficient total bonded");
+        // decrementBalanceOf(msg.sender, balance, "Bonding: insufficient balance");
 
-        emit Unbond(msg.sender, epoch().add(1), balance, value);
+        // emit Unbond(msg.sender, epoch().add(1), balance, value);
     }
 }

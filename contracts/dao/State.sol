@@ -17,17 +17,13 @@
 pragma solidity ^0.5.17;
 pragma experimental ABIEncoderV2;
 
-import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
+import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 import "../token/IDollar.sol";
 import "../oracle/IOracle.sol";
 import "../external/Decimal.sol";
 
 contract Account {
-    enum Status {
-        Frozen,
-        Fluid,
-        Locked
-    }
+    enum Status { Frozen, Fluid, Locked }
 
     struct State {
         uint256 staged;
@@ -43,6 +39,9 @@ contract Epoch {
         uint256 period;
         uint256 current;
         bool inExpansion;
+        // Adding epochsInExpansion
+        uint256 epochsAtPeg;
+        uint256 epochTwap;
     }
 
     struct State {
@@ -51,11 +50,7 @@ contract Epoch {
 }
 
 contract Candidate {
-    enum Vote {
-        UNDECIDED,
-        APPROVE,
-        REJECT
-    }
+    enum Vote { UNDECIDED, APPROVE, REJECT }
 
     struct State {
         uint256 start;
@@ -75,6 +70,8 @@ contract Storage {
         address poolLP;
         address poolBonding;
         address poolGov;
+        // Adding uniPairAddress
+        address uniPairAddress;
     }
 
     struct Balance {
@@ -87,7 +84,6 @@ contract Storage {
         Epoch.Global epoch;
         Balance balance;
         Provider provider;
-
         mapping(address => Account.State) accounts;
         mapping(uint256 => Epoch.State) epochs;
         mapping(address => Candidate.State) candidates;

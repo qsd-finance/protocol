@@ -28,6 +28,7 @@ contract PoolLP is Pool, Liquidity {
     constructor(
         IDAO _dao,
         IERC20 _stakingToken,
-        IERC20 _rewardsToken
-    ) public Pool(_dao, _stakingToken, _rewardsToken) {}
+        IERC20 _rewardsToken,
+        IERC20 _rewardsToken3
+    ) public Pool(_dao, _stakingToken, _rewardsToken, _rewardsToken3) {}
 }
