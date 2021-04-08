@@ -44,6 +44,7 @@ contract Regulator is Comptroller {
 
     function step() internal {
         Decimal.D256 memory price = oracleCapture();
+<<<<<<< HEAD
         Decimal.D256 memory expansionPrice = Constants.getExpansionPrice(); //##
         Decimal.D256 memory bottomPegPrice = Constants.getBottomPegPrice(); //##
 
@@ -57,9 +58,17 @@ contract Regulator is Comptroller {
 
             string memory message = "price greater than expansion";
 
+=======
+        Decimal.D256 memory expansionPrice = Constants.getExpansionPrice();   //##
+
+        //if (price.greaterThan(Decimal.one())) {
+        //if (price.greaterThan(Decimal.one().mul(100).div(98))) {   //##
+        if (price.greaterThan(expansionPrice)) {   //##
+>>>>>>> 7239dd778b860df4c8f986c46fc9eb0642883098
             // Expand supply
             growSupply(price);
 
+<<<<<<< HEAD
             // emit StepOutcome(message);
         } else if (price.greaterThan(bottomPegPrice) && price.lessThan(expansionPrice)) {
             setExpansionState(false);
@@ -78,6 +87,11 @@ contract Regulator is Comptroller {
 
             string memory message = "price less than peg";
 
+=======
+        //if (price.lessThan(Decimal.one())) {
+        //if (price.lessThan(Decimal.one().mul(100).div(98))) {    //##
+        if (price.lessThan(expansionPrice)) {    //##
+>>>>>>> 7239dd778b860df4c8f986c46fc9eb0642883098
             // Distribute governance tokens to stakers
             distributeGovernanceTokens();
 

@@ -27,6 +27,8 @@ library Constants {
     uint256 private constant EXPANSION_PRICE = 102e16; //##
     uint256 private constant BOTTOM_PEG_PRICE = 98e16; //##J
 
+    uint256 private constant EXPANSION_PRICE = 102e16;  //##
+
     /* Bootstrapping */
     // QSD #3
     uint256 private constant BOOTSTRAPPING_PERIOD = 72;
@@ -99,6 +101,7 @@ library Constants {
      * Getters
      */
 
+<<<<<<< HEAD
     function getExpansionPrice() internal pure returns (Decimal.D256 memory) {
         //##
         return Decimal.D256({ value: EXPANSION_PRICE });
@@ -107,6 +110,10 @@ library Constants {
     function getBottomPegPrice() internal pure returns (Decimal.D256 memory) {
         //##
         return Decimal.D256({ value: BOTTOM_PEG_PRICE });
+=======
+     function getExpansionPrice() internal pure returns (Decimal.D256 memory) {     //##
+        return Decimal.D256({value: EXPANSION_PRICE});
+>>>>>>> 7239dd778b860df4c8f986c46fc9eb0642883098
     }
 
     function getDaiAddress() internal pure returns (address) {
