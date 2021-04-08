@@ -11,3 +11,5 @@ tenderly.yaml
 .vscode/*
 
 data/*
+
+yarn.lock
