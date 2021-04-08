@@ -1,0 +1,49 @@
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
+// import { expect } from "chai";
+const { ethers, upgrades } = require("hardhat");
+// import { BN, expectBNEq, expectRevert, increaseTime, getLatestBlockTime, expectBNAproxEq } from "./Utils";
+import { Contract } from "ethers";
+const Web3 = require("web3");
+const fs = require("fs");
+
+const web3 = new Web3("http://127.0.0.1:8545/");
+
+const { parseEther } = ethers.utils;
+
+const DAI = "0x6b175474e89094c44da98b954eedeac495271d0f";
+const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+
+const UNISWAP_FACTORY = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
+const UNISWAP_ROUTER = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
+
+// const blockchainFuture = async () => {
+//   const t = await getLatestBlockTime();
+//   return t + 6000;
+// };
+
+describe("Integration", function () {
+  let [owner, user1, user2, user3]: SignerWithAddress[] = [];
+  let dollar: Contract;
+  let governanceToken: Contract;
+  let dai: Contract;
+  let impl: Contract;
+  let dao: Contract;
+  let root: Contract;
+  let uniswapRouter: Contract;
+  let uniV2Token: Contract;
+  let poolBonding: Contract;
+  let poolGov: Contract;
+  let poolLP: Contract;
+
+  let uniV2PairAddress: string;
+
+  beforeEach(async function () {
+    let rawdata = fs.readFileSync("./data/abi/contracts/dao/Implementation.sol/Implementation.json");
+    dao = new web3.eth.Contract(JSON.parse(rawdata), "0x3eBD4C22A0c391e5B0B8D0681fB4CEF67C3ea1fB");
+    // dao = await dao.getContractAt("Implementation", root.address);
+  });
+
+  it("Overall logic", async function () {
+    await dao.methods.advance();
+  });
+});

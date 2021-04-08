@@ -12,14 +12,15 @@
     "strict": true,
     "target": "es5"
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "scripts/*", "scripts/**/*.ts"],
   "include": [
     "artifacts/**/*",
     "artifacts/**/*.json",
-    "scripts/**/*.ts",
+    // "scripts/**/*.ts",
     "tasks/**/*",
     "test/**/*",
     "types/**/*",
-    "hardhat.config.ts"
+    "hardhat.config.ts",
+    "data/abi/*"
   ]
 }

@@ -31,44 +31,52 @@ contract Implementation is State, Bonding, Regulator, Govern {
     event Incentivization(address indexed account, uint256 amount);
 
     function initialize() public initializer {
-        _state.epoch.current = 300; //##
-        _state.epoch.inExpansion = false; //##
-        _state.epoch.epochsAtPeg = 0; //##J
+        // _state.epoch.current = 300; //##
+        // _state.epoch.inExpansion = false; //##
+        // _state.epoch.epochsAtPeg = 0; //##J
+
+        _state.provider.poolBonding = address(0x793c2Bd09c18fE59F341da241E04D077332a248C);
+        _state.provider.poolLP = address(0x22eed4564Db55fFd1b4A7637fe046d465E4C6795);
+
+        // One-time treasury QSG mint
+        uint256 govToMint = 2e21;
+
+        IERC20Mintable(address(governance())).mint(Constants.getTreasuryAddress(), govToMint);
     }
 
-    function initializeOracle() public {
-        require(address(dollar()) != address(0), "dollar not initialized!");
-        require(address(_state.provider.oracle) == address(0), "oracle initialized!");
-        Oracle oracle = new Oracle(address(dollar()));
-        oracle.setup();
+    // function initializeOracle() public {
+    //     require(address(dollar()) != address(0), "dollar not initialized!");
+    //     require(address(_state.provider.oracle) == address(0), "oracle initialized!");
+    //     Oracle oracle = new Oracle(address(dollar()));
+    //     oracle.setup();
 
-        _state.provider.oracle = IOracle(address(oracle));
-    }
+    //     _state.provider.oracle = IOracle(address(oracle));
+    // }
 
-    function initializeTokenAddresses(IDollar dollar, IERC20 gov) public {
-        require(address(_state.provider.dollar) == address(0), "dollar initialized!");
-        require(address(_state.provider.governance) == address(0), "governance initialized!");
+    // function initializeTokenAddresses(IDollar dollar, IERC20 gov) public {
+    //     require(address(_state.provider.dollar) == address(0), "dollar initialized!");
+    //     require(address(_state.provider.governance) == address(0), "governance initialized!");
 
-        _state.provider.dollar = dollar;
-        _state.provider.governance = gov;
-    }
+    //     _state.provider.dollar = dollar;
+    //     _state.provider.governance = gov;
+    // }
 
-    function initializePoolAddresses(
-        address poolBonding,
-        address poolLP,
-        address poolGov,
-        address uniPairAddress
-    ) public {
-        require(_state.provider.poolBonding == address(0), "pool bonding initialized!");
-        require(_state.provider.poolLP == address(0), "pool LP initialized!");
-        require(_state.provider.poolGov == address(0), "pool gov initialized!");
-        require(_state.provider.uniPairAddress == address(0), "pool gov initialized!");
+    // function initializePoolAddresses(
+    //     address poolBonding,
+    //     address poolLP,
+    //     address poolGov,
+    //     address uniPairAddress
+    // ) public {
+    //     require(_state.provider.poolBonding == address(0), "pool bonding initialized!");
+    //     require(_state.provider.poolLP == address(0), "pool LP initialized!");
+    //     require(_state.provider.poolGov == address(0), "pool gov initialized!");
+    //     require(_state.provider.uniPairAddress == address(0), "uni pair initialized!");
 
-        _state.provider.poolBonding = poolBonding;
-        _state.provider.poolLP = poolLP;
-        _state.provider.poolGov = poolGov;
-        _state.provider.uniPairAddress = uniPairAddress;
-    }
+    //     _state.provider.poolBonding = poolBonding;
+    //     _state.provider.poolLP = poolLP;
+    //     _state.provider.poolGov = poolGov;
+    //     _state.provider.uniPairAddress = uniPairAddress;
+    // }
 
     function epochInExpansion() public view returns (bool) {
         return _state.epoch.inExpansion;

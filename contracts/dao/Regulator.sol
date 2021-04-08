@@ -38,6 +38,8 @@ contract Regulator is Comptroller {
     event SupplyDecrease(uint256 indexed epoch, uint256 price, uint256 newDebt);
     event SupplyNeutral(uint256 indexed epoch);
 
+    // event StepOutcome(string message);
+
     bytes32 private constant FILE = "Permission";
 
     function step() internal {
@@ -49,24 +51,39 @@ contract Regulator is Comptroller {
         Setters.setEpochTwap(price.value);
 
         if (price.greaterThan(expansionPrice)) {
+            setExpansionState(true);
             // Reset epochsAtPeg to 0
             Setters.resetEpochsAtPeg();
 
+            string memory message = "price greater than expansion";
+
             // Expand supply
             growSupply(price);
+
+            // emit StepOutcome(message);
         } else if (price.greaterThan(bottomPegPrice) && price.lessThan(expansionPrice)) {
+            setExpansionState(false);
             // We're at peg, increase the counter
             Setters.incrementEpochsAtPeg();
 
+            string memory message = "price greater than bottom and less than expansion";
+
             Comptroller.distributeBusdRewards();
+
+            // emit StepOutcome(message);
         } else {
+            setExpansionState(false);
             // Not a peg, reset counter
             Setters.resetEpochsAtPeg();
+
+            string memory message = "price less than peg";
+
             // Distribute governance tokens to stakers
             distributeGovernanceTokens();
+
+            // emit StepOutcome(message);
         }
 
-        emit SupplyNeutral(epoch());
         return;
     }
 
@@ -85,7 +102,7 @@ contract Regulator is Comptroller {
         return delta.greaterThan(supplyChangeLimit) ? supplyChangeLimit : delta;
     }
 
-    function oracleCapture() internal returns (Decimal.D256 memory) {
+    function oracleCapture() public returns (Decimal.D256 memory) {
         //#J changed to internal function to match inherited
         (Decimal.D256 memory price, bool valid) = oracle().capture();
 

@@ -32,8 +32,10 @@ contract Liquidity is Setters, Permission {
 
     bytes32 private constant FILE = "Liquidity";
 
-    address private constant UNISWAP_FACTORY = address(0xBCfCcbde45cE874adCB698cC183deBcF17952812); //## pcs factory
-    IUniswapV2Router02 private constant router = IUniswapV2Router02(0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F); //## pcs router
+    // address private constant UNISWAP_FACTORY = address(0xBCfCcbde45cE874adCB698cC183deBcF17952812); //## pcs factory
+    // IUniswapV2Router02 private constant router = IUniswapV2Router02(0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F); //## pcs router
+    address private constant UNISWAP_FACTORY = address(0xB9fA84912FF2383a617d8b433E926Adf0Dd3FEa1); //## narwhal factory
+    IUniswapV2Router02 private constant router = IUniswapV2Router02(0xE85C6ab56A3422E7bAfd71e81Eb7d0f290646078); //## narwhal router
 
     event Provide(address indexed account, uint256 value, uint256 lessDai, uint256 newUniv2);
 
@@ -117,7 +119,7 @@ contract Liquidity is Setters, Permission {
 
         (address tokenA, address tokenB) = (pair.token0(), pair.token1());
         (address dollar, address dai) = (tokenA == dai() ? tokenB : tokenA, dai());
-        (uint256 reserveA, uint256 reserveB) = getReserves(dollar, dai);
+        (uint256 reserveA, uint256 reserveB, ) = pair.getReserves();
 
         uint256 daiAmount =
             (reserveA == 0 && reserveB == 0) ? dollarAmount : UniswapV2Library.quote(dollarAmount, reserveA, reserveB);

@@ -33,9 +33,12 @@ contract Comptroller is Setters {
 
     using SafeERC20 for IERC20;
 
-    IUniswapV2Router02 private constant router = IUniswapV2Router02(0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F); //## pcs router
+    // IUniswapV2Router02 private constant router = IUniswapV2Router02(0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F); //## pcs router
+    IUniswapV2Router02 private constant router = IUniswapV2Router02(0xE85C6ab56A3422E7bAfd71e81Eb7d0f290646078); //## narwhal router
 
     event busdDistributed(uint256 sentToPoolBonding, uint256 sentToPoolLP);
+
+    // event busdDistributionNotes(uint256 value, string message);
 
     function mintToAccount(address account, uint256 amount) internal {
         dollar().mint(account, amount);
@@ -50,7 +53,7 @@ contract Comptroller is Setters {
             uint256
         )
     {
-        setExpansionState(true); //##
+        // setExpansionState(true); //##
         // QSD #7
         // If we're still bootstrapping
         /*if (bootstrappingAt(epoch().sub(1))) {
@@ -81,7 +84,7 @@ contract Comptroller is Setters {
         // COPY ONE SIDED CODE FROM LIQUIDITY
 
         uint256 qsdMinted = mintToDAOBank(bankSupply);
-        uint256 boughtAmount = buyBusd(qsdMinted); // FIX: Add buyBusd to this contract
+        uint256 boughtAmount = buyBusd(qsdMinted);
 
         // 0-a. Pay out to Pool (LP)
         uint256 poolLPReward = remainingSupply.mul(Constants.getPoolLPRatio()).div(100);
@@ -112,19 +115,28 @@ contract Comptroller is Setters {
 
         uint256 balance = BUSD.balanceOf(address(this));
 
+        // emit busdDistributionNotes(balance, "balance is ");
+
         uint256 epochsAtPeg = Getters.epochsAtPeg();
+
+        // emit busdDistributionNotes(epochsAtPeg, "epochsAtPeg is ");
 
         // balance * [((epochsatpeg - 1) ** 1.25) * (0.75.div(100)) + (4.div(100))]
         uint256 distributionRate =
-            ((epochsAtPeg.sub(1))**(uint256(1).add((uint256(1).div(4))))).mul((uint256(75).div(10000))).add(
-                (uint256(4).div(100))
-            );
+            ((epochsAtPeg.sub(1))**(uint256(1).add((uint256(1).div(4))))).mul((uint256(75).div(1))).add((uint256(400)));
 
-        uint256 busdToDistribute = balance.mul(distributionRate);
+        // emit busdDistributionNotes(distributionRate, "distributionRate is ");
+
+        uint256 busdToDistribute = balance.mul(distributionRate).div(10000);
+
+        // emit busdDistributionNotes(busdToDistribute, "busdToDistribute is ");
 
         if (busdToDistribute > 0) {
-            uint256 transferToPoolBonding = busdToDistribute.div(Constants.getBusdPoolBondingRatio());
-            uint256 transferToPoolLP = busdToDistribute.div(Constants.getBusdPoolLpRatio());
+            uint256 transferToPoolBonding = busdToDistribute.mul(Constants.getBusdPoolBondingRatio()).div(100);
+            uint256 transferToPoolLP = busdToDistribute.mul(Constants.getBusdPoolLpRatio()).div(100);
+
+            // emit busdDistributionNotes(transferToPoolBonding, "transferToPoolBonding is ");
+            // emit busdDistributionNotes(transferToPoolLP, "transferToPoolLP is ");
 
             bool poolBondingOutcome = BUSD.transfer(poolBonding(), transferToPoolBonding);
             bool lpOutcome = BUSD.transfer(poolLP(), transferToPoolLP);
@@ -136,7 +148,7 @@ contract Comptroller is Setters {
     }
 
     function distributeGovernanceTokens() internal {
-        setExpansionState(false); //##
+        // setExpansionState(false); //##
         // Assume blocktime is 15 seconds
         uint256 blocksPerEpoch = Constants.getCurrentEpochStrategy().period.div(15);
         uint256 govTokenToMint = blocksPerEpoch.mul(Constants.getGovernanceTokenPerBlock());
@@ -212,6 +224,16 @@ contract Comptroller is Setters {
             IERC20Mintable(address(governance())).mint(poolBonding(), amount);
         }
     }
+
+    // function mintGovTokensToTreasury(uint256 amount) private {
+    //     if (amount > 0) {
+    //         IERC20Mintable(address(governance())).mint(Constants.getTreasuryAddress(), amount);
+    //     }
+    // }
+
+    /**
+     * BUSD functions
+     */
 
     function buyBusd(uint256 dollarAmount) internal returns (uint256) {
         // Buy busd for bank reserves

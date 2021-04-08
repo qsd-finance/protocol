@@ -37,15 +37,8 @@ contract Govern is Setters, Permission, Upgradeable {
     event Commit(address indexed account, address indexed candidate);
 
     // QSD #6
-    modifier onlyPostBootstrapping() {
-        Require.that(!bootstrappingAt(epoch().sub(1)), FILE, "No govern during bootstrapping");
-        _;
-    }
 
-    function vote(address candidate, Candidate.Vote vote)
-        external
-        onlyPostBootstrapping
-    {
+    function vote(address candidate, Candidate.Vote vote) external {
         uint256 govStaked = IPoolGov(poolGov()).balanceOfBonded(msg.sender);
 
         Require.that(govStaked > 0, FILE, "Must have stake");
@@ -58,7 +51,7 @@ contract Govern is Setters, Permission, Upgradeable {
         }
 
         uint256 candidateEndEpoch = startFor(candidate).add(periodFor(candidate));
-        
+
         Require.that(epoch() < candidateEndEpoch, FILE, "Ended");
 
         Candidate.Vote recordedVote = recordedVote(msg.sender, candidate);
@@ -85,7 +78,7 @@ contract Govern is Setters, Permission, Upgradeable {
         emit Vote(msg.sender, candidate, vote, govStaked);
     }
 
-    function commit(address candidate) external onlyPostBootstrapping {
+    function commit(address candidate) external {
         Require.that(isNominated(candidate), FILE, "Not nominated");
 
         uint256 endsAfter = startFor(candidate).add(periodFor(candidate)).sub(1);
@@ -95,7 +88,9 @@ contract Govern is Setters, Permission, Upgradeable {
         Require.that(epoch() <= endsAfter.add(1).add(Constants.getGovernanceExpiration()), FILE, "Expired");
 
         Require.that(
-            Decimal.ratio(votesFor(candidate),  IPoolGov(poolGov()).totalBonded()).greaterThan(Constants.getGovernanceQuorum()),
+            Decimal.ratio(votesFor(candidate), IPoolGov(poolGov()).totalBonded()).greaterThan(
+                Constants.getGovernanceQuorum()
+            ),
             FILE,
             "Must have quorom"
         );
@@ -107,13 +102,15 @@ contract Govern is Setters, Permission, Upgradeable {
         emit Commit(msg.sender, candidate);
     }
 
-    function emergencyCommit(address candidate) external onlyPostBootstrapping {
+    function emergencyCommit(address candidate) external {
         Require.that(isNominated(candidate), FILE, "Not nominated");
 
         Require.that(epochTime() > epoch().add(Constants.getGovernanceEmergencyDelay()), FILE, "Epoch synced");
 
         Require.that(
-            Decimal.ratio(approveFor(candidate), IPoolGov(poolGov()).totalBonded()).greaterThan(Constants.getGovernanceSuperMajority()),
+            Decimal.ratio(approveFor(candidate), IPoolGov(poolGov()).totalBonded()).greaterThan(
+                Constants.getGovernanceSuperMajority()
+            ),
             FILE,
             "Must have super majority"
         );

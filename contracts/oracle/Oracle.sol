@@ -31,7 +31,8 @@ contract Oracle is IOracle {
     using Decimal for Decimal.D256;
 
     bytes32 private constant FILE = "Oracle";
-    address private constant UNISWAP_FACTORY = address(0xBCfCcbde45cE874adCB698cC183deBcF17952812); //## pcs factory
+    // address private constant UNISWAP_FACTORY = address(0xBCfCcbde45cE874adCB698cC183deBcF17952812); //## pcs factory
+    address private constant UNISWAP_FACTORY = address(0xB9fA84912FF2383a617d8b433E926Adf0Dd3FEa1); //## narhwal factory
 
     address internal _dao;
     address internal _dollar;
@@ -93,7 +94,7 @@ contract Oracle is IOracle {
     function updateOracle() private returns (Decimal.D256 memory, bool) {
         Decimal.D256 memory price = updatePrice();
         uint256 lastReserve = updateReserve();
-
+            
         bool valid = true;
         if (lastReserve < Constants.getOracleReserveMinimum()) {
             valid = false;

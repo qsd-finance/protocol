@@ -205,4 +205,8 @@ contract Getters is State {
             impl := sload(slot)
         }
     }
+
+    function getExpansionState() public view returns (bool) {
+        return _state.epoch.inExpansion;
+    }
 }

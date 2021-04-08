@@ -39,7 +39,7 @@ contract Epoch {
         uint256 period;
         uint256 current;
         bool inExpansion;
-        // Adding epochsInExpansion
+        // Adding epochsAtPeg and Twap
         uint256 epochsAtPeg;
         uint256 epochTwap;
     }

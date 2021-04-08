@@ -184,8 +184,4 @@ contract Setters is State, Getters {
     function dai() public pure returns (address) {
         return Constants.getDaiAddress();
     }
-
-    function uniPairAddress() public pure returns (address) {
-        return Constants.getUniPairAddress();
-    }
 }

@@ -4,9 +4,13 @@
 
 // import { HardhatUserConfig } from "hardhat/config";
 
+require("@tenderly/hardhat-tenderly");
+
 require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-ethers");
-const { mnemonic } = require("./secrets.json");
+const { mnemonic, etherscan_key } = require("./secrets.json");
+require("hardhat-abi-exporter");
+import "@nomiclabs/hardhat-etherscan";
 
 // module.exports =  {
 //   solidity: {
@@ -55,12 +59,16 @@ const { mnemonic } = require("./secrets.json");
 // };
 
 module.exports = {
-  defaultNetwork: "testnet",
+  defaultNetwork: "hardhat",
   networks: {
     localhost: {
-      url: "http://127.0.0.1:8545",
+      url: "http://127.0.0.1:8545/",
     },
-    hardhat: {},
+    hardhat: {
+      forking: {
+        url: "https://data-seed-prebsc-1-s1.binance.org:8545",
+      },
+    },
     testnet: {
       url: "https://data-seed-prebsc-1-s1.binance.org:8545",
       chainId: 97,
@@ -110,5 +118,21 @@ module.exports = {
   },
   mocha: {
     timeout: 20000,
+  },
+  abiExporter: {
+    path: "./data/abi",
+    clear: true,
+    flat: false,
+    only: [],
+    spacing: 2,
+  },
+  tenderly: {
+    username: "JimmyFx",
+    project: "project",
+  },
+  etherscan: {
+    // Your API key for Etherscan
+    // Obtain one at https://etherscan.io/
+    apiKey: etherscan_key,
   },
 };

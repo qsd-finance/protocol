@@ -62,7 +62,6 @@ contract PoolLP is Setters, Permission, Liquidity {
     }
 
     function bond(uint256 value) public validBalance {
-        require(inExpansion() == false, "Cannot bond during expansion"); //##
         // QSD #B
         _bond(value);
     }
@@ -114,7 +113,6 @@ contract PoolLP is Setters, Permission, Liquidity {
     }
 
     // Function to allow users to move rewards to claimable
-    // while twap is < 1
     function pokeRewards() external {
         uint256 balanceOfBonded = balanceOfBonded(msg.sender);
 

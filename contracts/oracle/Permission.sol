@@ -18,39 +18,27 @@ pragma solidity ^0.5.17;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "./PoolState.sol";
-import "./PoolGetters.sol";
+import "./pool-gov/PoolState.sol";
+import "./pool-gov/PoolGetters.sol";
 import "../external/Require.sol";
 
 contract Permission is PoolState, PoolGetters {
     bytes32 private constant FILE = "Permission";
 
     modifier onlyFrozen(address account) {
-        Require.that(
-            statusOf(account) == PoolAccount.Status.Frozen,
-            FILE,
-            "Not frozen"
-        );
+        Require.that(statusOf(account) == PoolAccount.Status.Frozen, FILE, "Not frozen");
 
         _;
     }
 
     modifier onlyDao() {
-        Require.that(
-            msg.sender == address(dao()),
-            FILE,
-            "Not dao"
-        );
+        Require.that(msg.sender == address(dao()), FILE, "Not dao");
 
         _;
     }
 
     modifier notPaused() {
-        Require.that(
-            !paused(),
-            FILE,
-            "Paused"
-        );
+        Require.that(!paused(), FILE, "Paused");
 
         _;
     }

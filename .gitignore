@@ -4,6 +4,7 @@ node_modules
 cache
 artifacts
 secrets.json
+tenderly.yaml
 
 *.env
 
