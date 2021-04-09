@@ -21,8 +21,7 @@ import "./external/Decimal.sol";
 
 library Constants {
     /* Chain */
-    // uint256 private constant CHAIN_ID = 56; //##  BSC Mainnet
-    uint256 private constant CHAIN_ID = 97; //##  BSC Testnet
+    uint256 private constant CHAIN_ID = 56; //##  BSC Mainnet
 
     uint256 private constant EXPANSION_PRICE = 102e16; //##
     uint256 private constant BOTTOM_PEG_PRICE = 98e16; //##J
@@ -33,9 +32,8 @@ library Constants {
     uint256 private constant BOOTSTRAPPING_PRICE = 11e17; // 1.10 DAI
 
     /* Oracle */
-    // address private constant DAI = address(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56); //## mainnet busd
-    address private constant DAI = address(0x33D000dfe25424Ac6f87aC771728fF231d5b1E35); //## testnet DAI
-    uint256 private constant ORACLE_RESERVE_MINIMUM = 10000e18; // 10,000 DAI
+    address private constant DAI = address(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56); //## mainnet busd
+    uint256 private constant ORACLE_RESERVE_MINIMUM = 10000e18; // 10,000 BUSD
 
     /* Bonding */
     uint256 private constant INITIAL_STAKE_MULTIPLE = 1e6; // 100 ESD -> 100M ESDS

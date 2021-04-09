@@ -38,8 +38,6 @@ contract Regulator is Comptroller {
     event SupplyDecrease(uint256 indexed epoch, uint256 price, uint256 newDebt);
     event SupplyNeutral(uint256 indexed epoch);
 
-    // event StepOutcome(string message);
-
     bytes32 private constant FILE = "Permission";
 
     function step() internal {
@@ -52,30 +50,26 @@ contract Regulator is Comptroller {
 
         if (price.greaterThan(expansionPrice)) {
             setExpansionState(true);
-            // Reset epochsAtPeg to 0
+
             Setters.resetEpochsAtPeg();
 
             // Expand supply
             growSupply(price);
-
-            // emit StepOutcome(message);
         } else if (price.greaterThan(bottomPegPrice) && price.lessThan(expansionPrice)) {
             setExpansionState(false);
+
             // We're at peg, increase the counter
             Setters.incrementEpochsAtPeg();
 
             Comptroller.distributeBusdRewards();
-
-            // emit StepOutcome(message);
         } else {
             setExpansionState(false);
+
             // Not a peg, reset counter
             Setters.resetEpochsAtPeg();
 
             // Distribute governance tokens to stakers
             distributeGovernanceTokens();
-
-            // emit StepOutcome(message);
         }
 
         return;
@@ -100,9 +94,6 @@ contract Regulator is Comptroller {
         //#J changed to internal function to match inherited
         (Decimal.D256 memory price, bool valid) = oracle().capture();
 
-        /*if (bootstrappingAt(epoch().sub(1))) {
-            return Constants.getBootstrappingPrice();
-        }*/
         if (!valid) {
             return Decimal.one();
         }
