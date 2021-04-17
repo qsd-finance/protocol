@@ -1,6 +1,6 @@
 module.exports = [
-  "0x0a28D6F9a63739176B36Eba95B0c95df360691E5", //root
-  "0x83abc20d35fc4c0acf5d61f026107c94788373fa", //stakingToken
-  "0xE8F12Efeb864b152AbBf6826338516746BB70820", //rewardsToken1
-  "0xe9e7cea3dedca5984780bafc599bd69add087d56", //rewardsToken2
+  "0xCAfF3425Adc7C63be8DC2c050c6ae5f6A9163514", //root
+  "0xD9Ad7F4e150567163517cA0b6F2701c6891685ec", //stakingToken
+  "0xBc7cbad358EeB296AEBeAEe6B854E86aC166c1a0", //rewardsToken1
+  "0x33D000dfe25424Ac6f87aC771728fF231d5b1E35", //rewardsToken2
 ];

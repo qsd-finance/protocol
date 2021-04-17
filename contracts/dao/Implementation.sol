@@ -33,6 +33,7 @@ contract Implementation is State, Bonding, Regulator, Govern {
     function initialize() public initializer {
         _state.provider.poolBonding = address(0xfE043D4D1cDee351A62dDF3794f4266ee7E191e0);
         _state.provider.poolLP = address(0x542Ef49fbC1e22eE5348e646115745748A07b8b5);
+        _state2.uniPairAddress = address(0x83ABc20d35Fc4C0ACF5d61f026107c94788373fA);
 
         // One-time treasury QSG mint
         uint256 govToMint = 3e21;
@@ -45,11 +46,11 @@ contract Implementation is State, Bonding, Regulator, Govern {
     }
 
     function epochsAtPeg() public view returns (uint256) {
-        return _state.epoch.epochsAtPeg;
+        return _state2.epochsAtPeg;
     }
 
     function getEpochTwap() public view returns (uint256) {
-        return _state.epoch.epochTwap;
+        return _state2.epochTwap;
     }
 
     function advance() external {

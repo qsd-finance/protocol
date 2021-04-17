@@ -117,15 +117,15 @@ contract Setters is State, Getters {
     }
 
     function incrementEpochsAtPeg() internal {
-        _state.epoch.epochsAtPeg++;
+        _state2.epochsAtPeg++;
     }
 
     function resetEpochsAtPeg() internal {
-        _state.epoch.epochsAtPeg = 0;
+        _state2.epochsAtPeg = 0;
     }
 
     function setEpochTwap(uint256 price) internal {
-        _state.epoch.epochTwap = price;
+        _state2.epochTwap = price;
     }
 
     /**

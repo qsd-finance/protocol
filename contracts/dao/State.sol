@@ -39,9 +39,6 @@ contract Epoch {
         uint256 period;
         uint256 current;
         bool inExpansion;
-        // Adding epochsAtPeg and Twap
-        uint256 epochsAtPeg;
-        uint256 epochTwap;
     }
 
     struct State {
@@ -70,8 +67,6 @@ contract Storage {
         address poolLP;
         address poolBonding;
         address poolGov;
-        // Adding uniPairAddress
-        address uniPairAddress;
     }
 
     struct Balance {
@@ -88,8 +83,17 @@ contract Storage {
         mapping(uint256 => Epoch.State) epochs;
         mapping(address => Candidate.State) candidates;
     }
+
+    struct State2 {
+        address uniPairAddress;
+        uint256 epochsAtPeg;
+        uint256 epochTwap;
+    }
 }
 
 contract State {
     Storage.State _state;
+
+    // QIP-1
+    Storage.State2 _state2;
 }

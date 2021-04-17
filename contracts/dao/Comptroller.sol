@@ -33,8 +33,6 @@ contract Comptroller is Setters {
 
     using SafeERC20 for IERC20;
 
-    IUniswapV2Router02 private constant router = IUniswapV2Router02(0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F); //## pcs router
-
     event busdDistributed(uint256 sentToPoolBonding, uint256 sentToPoolLP);
 
     function mintToAccount(address account, uint256 amount) internal {
@@ -192,7 +190,9 @@ contract Comptroller is Setters {
 
     function buyBusd(uint256 dollarAmount) internal returns (uint256) {
         // Buy busd for bank reserves
-        IUniswapV2Pair pair = IUniswapV2Pair(_state.provider.uniPairAddress);
+        IUniswapV2Pair pair = IUniswapV2Pair(_state2.uniPairAddress);
+
+        IUniswapV2Router02 router = IUniswapV2Router02(0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F); //## pcs router
 
         address dai = Setters.dai();
         address dollar = pair.token0() == dai ? pair.token1() : pair.token0();

@@ -136,7 +136,7 @@ contract Getters is State {
     }
 
     function epochsAtPeg() public view returns (uint256) {
-        return _state.epoch.epochsAtPeg;
+        return _state2.epochsAtPeg;
     }
 
     function epochTime() public view returns (uint256) {
